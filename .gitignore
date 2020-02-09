@@ -1,0 +1,31 @@
+﻿/Library/
+/Logs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+
+# Unity3D generated meta files
+*.pidb.meta
+*.pdb.meta
+
+# Unity3D Generated File On Crash Reports
+sysinfo.txt
+
+# Builds
+*.apk
+*.unitypackage
+/Temp/
+/.idea/
+/obj/Debug/
+/Packages/
+/unityProject.vrmanifest
