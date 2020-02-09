@@ -191,8 +191,92 @@ float3 RotateZ(float3 p, float angle)
     return float3(c*p.x + s*p.y, -s*p.x + c*p.y, p.z);
 }
 
+float3 ScaleX(float3 p, float scale)
+{
+    return float3(p.x / scale, p.y, p.z);
+}
+
+float3 ScaleY(float3 p, float scale)
+{
+    return float3(p.x, p.y / scale, p.z);
+}
+
+float3 ScaleZ(float3 p, float scale)
+{
+    return float3(p.x, p.y, p.z / scale);
+}
+
 float2x2 rot(float a) {
 	return float2x2(cos(a),sin(a),-sin(a),cos(a));	
+}
+
+float AngleBetween(float3 a, float3 b)
+{
+    return acos(dot(a, b));
+}
+float AngleBetween(float3 pos1, float3 pos2, float3 center)
+{
+    return AngleBetween(
+        normalize(pos1 - center),
+        normalize(pos2 - center));
+}
+
+float4 _OffsetPosition;
+float4 _Scale;
+
+float3 localize(float3 p)
+{
+    return mul(unity_WorldToObject, float4(p, 1)).xyz * _Scale.xyz; // + _OffsetPosition.xyz;
+}
+
+float fract(float x) {
+ return x - floor(x);
+}
+
+float fract(float3 x) {
+ return x - floor(x);
+}
+
+float mix(float x, float y, float z) {
+ return x*(1. - z) + y*z;
+}
+
+void domainRep3(inout float3 p, float3 size) {
+	p = modc(p + size,2. * size) - size;
+}
+
+float3 domainRep3Idx(inout float3 p, float3 size) {
+	float3 idx = floor((p + size)/size/2.);
+	p = modc(p + size, 2. * size) - size;
+	return idx;
+}
+
+float smin( float a, float b, float k )
+{
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+}
+
+float smax( in float a, in float b, in float s ){
+    float h = clamp( 0.5 + 0.5*(a-b)/s, 0.0, 1.0 );
+    return mix(b, a, h) + h*(1.0-h)*s;
+}
+
+float hash(float h) {
+	return fract(sin(h) * 43758.5453123);
+}
+
+float noise3d(float3 x) {
+	float3 p = floor(x);
+	float3 f = fract(x);
+	f = f * f * (3.0 - 2.0 * f);
+
+	float n = p.x + p.y * 157.0 + 113.0 * p.z;
+	return mix(
+			mix(mix(hash(n + 0.0), hash(n + 1.0), f.x),
+					mix(hash(n + 157.0), hash(n + 158.0), f.x), f.y),
+			mix(mix(hash(n + 113.0), hash(n + 114.0), f.x),
+					mix(hash(n + 270.0), hash(n + 271.0), f.x), f.y), f.z);
 }
 
 #endif

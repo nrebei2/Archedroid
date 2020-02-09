@@ -58,7 +58,9 @@ public class RaymarchingCamera : MonoBehaviour
     public Vector4 _fractal;
     public float _fractalSmooth;
     public Vector3 _fractaldegreeRotate;
+    public Vector3 _fractalScale;
     public float _power;
+    public Vector3 Params;
 
     [Header("Make Object Repeat Indefinitely on Axis (Value 1 is True, Any Other Value is False)")]
     public Vector3 _modBool;
@@ -91,6 +93,41 @@ public class RaymarchingCamera : MonoBehaviour
 
     void Update()
     {
+        
+        rend.sharedMaterial.SetVector("_modBool", _modBool);
+        rend.sharedMaterial.SetVector("_modInterval", _modInterval);
+        
+        rend.sharedMaterial.SetVector("_fractal", _fractal);
+        rend.sharedMaterial.SetFloat("_fractalSmooth", _fractalSmooth);
+        rend.sharedMaterial.SetVector("_fractaldegreeRotate", _fractaldegreeRotate);
+        rend.sharedMaterial.SetVector("_fractalScale", _fractalScale);
+        rend.sharedMaterial.SetFloat("_power", _power);
+        rend.sharedMaterial.SetVector("Params", Params);
+        
+        /*
+        material.SetFloat("_ShadowIntensity", _ShadowIntensity);
+        material.SetFloat("_ShadowPenumbra", _ShadowPenumbra);
+        material.SetVector("_ShadowDistance", _ShadowDistance);
+        
+        material.SetFloat("_AoStepsize", _AoStepsize);
+        material.SetFloat("_AoInstensity", _AoInstensity);
+        material.SetInt("_AoIterations", _AoIterations);
+
+        material.SetInt("_ReflectionCount", _ReflectionCount);
+        material.SetFloat("_ReflectionIntensity", _ReflectionIntensity);
+        material.SetFloat("_EnvReflIntenisty", _EnvReflIntenisty);
+        material.SetTexture("_ReflectionCube", _ReflectionCube);
+        */
+        
+        rend.sharedMaterial.SetFloat("_Loop", Loop);
+        rend.sharedMaterial.SetFloat("_MinDistance", MinimumDistance);
+        rend.sharedMaterial.SetFloat("_DistanceMultiplier", DistanceMultiplier);
+        rend.sharedMaterial.SetTexture("_Texture", fractalTexutre);
+        rend.sharedMaterial.SetColor("_Color", Color);
+        rend.sharedMaterial.SetFloat("_Metallic", Metallic);
+        rend.sharedMaterial.SetFloat("_Smoothness", Smoothness);
+
+        
         switch (fractal)
         {
             case Fractal.StaticMandelbulb:
@@ -141,44 +178,74 @@ public class RaymarchingCamera : MonoBehaviour
             case Fractal.FCT_BBSK:
                 _fractalNumber = 15;
                 break;
+            case Fractal.trinoise:
+                _fractalNumber = 16;
+                break;
+            case Fractal.RecursiveTetrahedron:
+                _fractalNumber = 17;
+                break;
+            case Fractal.TruchetTentacles:
+                _fractalNumber = 18;
+                break;
+            case Fractal.FCT_PROTEIN:
+                _fractalNumber = 19;
+                break;
+            case Fractal.FCT_ORBIT:
+                _fractalNumber = 20;
+                break;
+            case Fractal.FCT_MNMT:
+                _fractalNumber = 21;
+                break;
+            case Fractal.FCT_CRAB:
+                _fractalNumber = 22;
+                break;
+            case Fractal.FCT_HUB:
+                _fractalNumber = 23;
+                break;
+            case Fractal.FCT_HYPERAPO:
+                _fractalNumber = 24;
+                break;
+            case Fractal.FCT_DLBT:
+                _fractalNumber = 25;
+                break;
+            case Fractal.FCT_MZGN:
+                _fractalNumber = 26;
+                break;
+            case Fractal.FCT_PIPES:
+                _fractalNumber = 27;
+                break;
+            case Fractal.FCT_APOP:
+                _fractalNumber = 28;
+                break;
+            case Fractal.FCT_APO:
+                _fractalNumber = 29;
+                break;
+            case Fractal.FCT_HTVT:
+                _fractalNumber = 30;
+                break;
+            case Fractal.FCT_KNKL:
+                _fractalNumber = 31;
+                break;
+            case Fractal.FCT_KIFS:
+                _fractalNumber = 32;
+                break;
+            case Fractal.FCT_TEXT:
+                _fractalNumber = 33;
+                break;
+            case Fractal.FCT_TEST:
+                _fractalNumber = 34;
+                break;
         }
+        
         rend.sharedMaterial.SetFloat("_fractalNumber", _fractalNumber);
         //Debug.Log(_fractalNumber);
         
-        rend.sharedMaterial.SetVector("_modBool", _modBool);
-        rend.sharedMaterial.SetVector("_modInterval", _modInterval);
-        
-        rend.sharedMaterial.SetVector("_fractal", _fractal);
-        rend.sharedMaterial.SetFloat("_fractalSmooth", _fractalSmooth);
-        rend.sharedMaterial.SetVector("_fractaldegreeRotate", _fractaldegreeRotate);
-        rend.sharedMaterial.SetFloat("_power", _power);
-        
-        /*
-        material.SetFloat("_ShadowIntensity", _ShadowIntensity);
-        material.SetFloat("_ShadowPenumbra", _ShadowPenumbra);
-        material.SetVector("_ShadowDistance", _ShadowDistance);
-        
-        material.SetFloat("_AoStepsize", _AoStepsize);
-        material.SetFloat("_AoInstensity", _AoInstensity);
-        material.SetInt("_AoIterations", _AoIterations);
-
-        material.SetInt("_ReflectionCount", _ReflectionCount);
-        material.SetFloat("_ReflectionIntensity", _ReflectionIntensity);
-        material.SetFloat("_EnvReflIntenisty", _EnvReflIntenisty);
-        material.SetTexture("_ReflectionCube", _ReflectionCube);
-        */
-        
-        rend.sharedMaterial.SetFloat("_Loop", Loop);
-        rend.sharedMaterial.SetFloat("_MinDistance", MinimumDistance);
-        rend.sharedMaterial.SetFloat("_DistanceMultiplier", DistanceMultiplier);
-        rend.sharedMaterial.SetTexture("_Texture", fractalTexutre);
-        rend.sharedMaterial.SetColor("_Color", Color);
-        rend.sharedMaterial.SetFloat("_Metallic", Metallic);
-        rend.sharedMaterial.SetFloat("_Smoothness", Smoothness);
 
         
 
     }
 }
     public enum Fractal{ StaticMandelbulb, DynamicMandelbulb, Julia, Juliabulb, Sierpinski, Mandelbox, 
-        KaleidoscopicIFS, Tglad, Hartverdrahtet, PseudoKleinian, PseudoKnightyan, Mandelbulb2, MengerSponge, apo, plane, FCT_BBSK }
+        KaleidoscopicIFS, Tglad, Hartverdrahtet, PseudoKleinian, PseudoKnightyan, Mandelbulb2, MengerSponge, apo, plane,
+        FCT_BBSK, trinoise, RecursiveTetrahedron, TruchetTentacles, FCT_PROTEIN, FCT_ORBIT, FCT_MNMT, FCT_CRAB, FCT_HUB, 
+        FCT_HYPERAPO, FCT_DLBT, FCT_MZGN, FCT_PIPES, FCT_APOP, FCT_APO, FCT_HTVT, FCT_KNKL, FCT_KIFS, FCT_TEXT, FCT_TEST }

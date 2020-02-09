@@ -310,7 +310,7 @@ float mandelbox(float3 position) {
     float FR2 = fixedRadius * fixedRadius;
     float minRadius = 0.5;
     float MR2 = minRadius * minRadius;
-    float4 scalevec = float4(SCALE, SCALE, SCALE, abs(SCALE)) / MR2;
+    float4 scalefloat = float4(SCALE, SCALE, SCALE, abs(SCALE)) / MR2;
     float C1 = abs(SCALE-1.0);
     float C2 = pow(abs(SCALE), float(1-5));
     float4 p = float4(position.xyz, 1.0); 
@@ -319,7 +319,7 @@ float mandelbox(float3 position) {
         p.xyz = clamp(p.xyz *0.5+0.5, 0.0, 1.0) *4.0-2.0 - p.xyz; // box fold: min3, max3, mad3
         float r2 = dot(p.xyz, p.xyz);  // dp3
         p.xyzw *= clamp(max(MR2/r2, MR2), 0.0, 1.0);  // sphere fold: div1, max1.sat, mul4
-        p.xyzw = p*scalevec + p0;  // mad4
+        p.xyzw = p*scalefloat + p0;  // mad4
     }
   return (length(p.xyz) - C1) / p.w - C2;
 
@@ -349,14 +349,14 @@ float kaleidoscopic_IFS(float3 z)
 
     float c = 2.0;
     z.y = modc(z.y, c)-c/2.0;
-    z = RotateZ(z, PI/2.0);
+    z = RotateZ(z, (PI/2.0)/0.0174532925);
     float r;
     int n1 = 0;
     for (int n = 0; n < FRACT_ITER; n++) {
         float rotate = PI*0.5;
-        z = RotateX(z, rotate);
-        z = RotateY(z, rotate);
-        z = RotateZ(z, rotate);
+        z = RotateX(z, rotate/0.0174532925);
+        z = RotateY(z, rotate/0.0174532925);
+        z = RotateZ(z, rotate/0.0174532925);
 
         z.xy = abs(z.xy);
         if (z.x+z.y<0.0) z.xy = -z.yx; // fold 1
@@ -365,90 +365,6 @@ float kaleidoscopic_IFS(float3 z)
         z = z*FRACT_SCALE - FRACT_OFFSET*(FRACT_SCALE-1.0);
     }
     return (length(z) ) * pow(FRACT_SCALE, -float(FRACT_ITER));
-}
-
-float4 formula(float4 p) {
-		p.xz = abs(p.xz+1.)-abs(p.xz-1.)-p.xz;
-		p.y-=.25;
-		float a = 35.0;
-		p.x = cos(a) * p.x + sin(a) * p.y;
-		p.y = -sin(a) * p.x + cos(a) * p.y;
-		p=p*2./clamp(dot(p.xyz,p.xyz),.2,1.);
-	return p;
-}
-
-float FCT_BBSK(float3 pos) {
-    float3 cFcParams = float3(2.18, -0.18, 0);
-    float3 CSize = float3(1.4,0.87, 1.1);
-    float3 p = pos.xzy * 2.0;
-    float scale = 1.0;
-    
-    for( int i=0; i < 4;i++ )
-    {
-        p = 2.0*clamp(p, -CSize, CSize) - p;
-        //float r2 = dot(p,p);
-        float r2 = dot(p,p+sin(p.z*.5)); //Alternate fractal
-        float k = max((2.)/(r2), .17);
-        p *= k;
-        //p *=rot;
-        //p= p.yzx;
-        p+=float3(0.2,0.2,-0.5);
-        scale *= k;
-    }
-
-    p = 2.0*clamp(p, -CSize * 4., CSize * 4.) - p;
-   
-    for(int i=0; i < 8; i++ )
-    {
-        p = 2.0*clamp(p, -CSize, CSize) - p;
-        float r2 = dot(p,p);
-        //float r2 = dot(p,p+sin(p.z*.3)); //Alternate fractal
-        float k = max((cFcParams.x)/(r2),  0.027);
-        p     *= k;
-        scale *= k;
-        p.y += cFcParams.y;
-    }
-    
-    float l = length(p.xy);
-    //l = mix(l,l2,0.5);
-    float rxy = l - 4.0;
-    float n = 1.0 * p.z;
-    rxy = max(rxy, -(n) / 4.);
-    float dist = (rxy) / abs(scale);
-    dist *=.75;
-
-    return dist;
-
-}
-
-float apo(float3 pos, float seed, float3 CSize, float3 C) 
-{
-  float dist;
-  //vec3 CSize = vec3(1., 1., 1.3);
-  float3 p = pos.xzy;
-  float scale = 1.0;
- // p *= cFcRot;
-  float r2 = 0.;
-  float k = 0.;
-  //float uggg = 0.;
-  for( int i=0; i < 12;i++ )
-  {
-      p = 2.0*clamp(p, -CSize, CSize) - p;
-      r2 = dot(p,p);
-      //r2 = dot(p,p+sin(p.z*.3)); //Alternate fractal
-      k = max((2.0)/(r2), seed); //.378888 //.13345 max((2.6)/(r2), .03211); //max((1.8)/(r2), .0018);
-      p     *= k;
-      scale *= k;
-      //uggg += r2;
-      p+=C;
-       //p.xyz = vec3(-1.0*p.z,1.0*p.x,1.0*p.y);
-  }
-  float l = length(p.xy);
-  float rxy = l - 4.0;
-  float n = 1.0 * p.z;
-  rxy = max(rxy, -(n) / 4.);
-  dist = (rxy) / abs(scale);
-  return dist;
 }
 
 float tglad_formula(float3 z0)
@@ -576,7 +492,7 @@ float trinoise(float3 p, float spd, float time)
 
 float trinoise(float3 p)
 {
-    return trinoise(p, 0.0, 0.0);
+    return trinoise(p, 1.0, 1.0);
 }
 
 inline float RecursiveTetrahedron(float3 p, int loop)
@@ -634,3 +550,497 @@ inline float TruchetTentacles(float3 pos)
     else if (r < 0.875) return truchetcell(float3(1.0 - c.y, c.x, c.z));
     else                return truchetcell(float3(1.0 - c.y, 1.0 - c.x, c.z));
 }
+
+uniform float3 cFcParams = float3(0,0,0);
+uniform float3x3 cFcRot;
+float dist = 10000.;
+float tex,tex2,tex3 = 0;
+
+
+float apo(float3 pos, float seed, float3 CSize, float3 C) 
+{
+  float dist;
+  //float3 CSize = float3(1., 1., 1.3);
+  float3 p = pos.xzy;
+  float scale = 1.0;
+ // p *= cFcRot;
+  float r2 = 0.;
+  float k = 0.;
+  //float uggg = 0.;
+  for( int i=0; i < 12;i++ )
+  {
+      p = 2.0*clamp(p, -CSize, CSize) - p;
+      r2 = dot(p,p);
+      //r2 = dot(p,p+sin(p.z*.3)); //Alternate fractal
+      k = max((2.0)/(r2), seed); //.378888 //.13345 max((2.6)/(r2), .03211); //max((1.8)/(r2), .0018);
+      p     *= k;
+      scale *= k;
+      //uggg += r2;
+      p+=C;
+       //p.xyz = float3(-1.0*p.z,1.0*p.x,1.0*p.y);
+  }
+  float l = length(p.xy);
+  float rxy = l - 4.0;
+  float n = 1.0 * p.z;
+  rxy = max(rxy, -(n) / 4.);
+  dist = (rxy) / abs(scale);
+  return dist;
+}
+
+inline float FCT_PROTEIN(float3 pos, float3 Params) {
+// Notable Params: (-12.82 -0.63 -16.18)
+    float3 cFcParams = Params;
+    float3 p = pos * 0.002;
+    float4 q = float4(p - 1., 1.);
+    for(int i = 0; i < 7; i++) {
+      q.xyz = abs(q.xyz + 1.3) - 1.0;
+      q /= clamp(dot(q.xyz, q.xyz), 0.0, 0.8);
+      //q.xyz *= cFcRot;
+      q *= 1.567+cFcParams.x;// + p.y*0.8;
+      q = q.zxyw;
+      q+= float4(0.2119,0.8132,0.077213,0.);
+    }
+    for(int i = 0; i < 4; i++) {
+      q.xyz = abs(q.xyz + 1.3) - 1.0;
+      q /= clamp(dot(q.xyz, q.xyz), 0.0, 0.8);
+      q *= 1.867;// + p.y*0.8;
+    }
+    return (length(q.xyz) - max(-240.-p.y*700.,2.5))/q.w * 300.;
+}
+
+inline float FCT_ORBIT(float3 pos) {
+    float3 p = pos * 0.001;
+    float4 q = float4(p - 1.0, 1);
+    for(int i = 0; i < 11; i++) {
+      //q.xyz = mod(q.xyz,2.0)-0.5*q.xyz;
+       q.xyz = abs(q.xyz + 1.0) - 1.0;
+      q.xyz = 2.0*clamp(q.xyz, -73.0174, 73.0174) - q.xyz;
+      q /= min(dot(q.xyz, q.xyz), 0.9);
+      q *= 1.817;// + p.y*0.8;
+      //q += float4(0.2,.02,-.2,0.2);
+      //q.xyz *= rot;
+    }
+    return dist = (length(q.xz) - 2.1)/q.w * 800.;
+}
+
+inline float FCT_MNMT(float3 pos) {
+    float3 CSize = float3(1., 1., 1.3); // <-- CSize Constant
+float3 p = pos.yzx; // <-- 3D Position
+float scale = 1.0; // <-- Scale
+
+for (int i = 0; i < 8; i++) { // <-- Primary iteration
+    p = 2.0 * clamp(p, -CSize, CSize) - p;
+    float r2 = dot(p, p);
+    float k = max((2.) / (r2), .1274);
+    p *= k;
+    //p *= cFcRot;                                    // \ Lines present only
+    p.xyz = float3(1.0 * p.z, 1.0 * p.x, -1.0 * p.y); // / in this loop
+    scale *= k;
+}
+
+CSize = float3(1.2, 0.4, 1.4); // <-- CSize Constant
+tex = p.y; //<-- Texture Primary
+
+for (int i = 0; i < 4; i++) { // <-- Secondary Iteration
+    p = 2.0 * clamp(p, -CSize, CSize) - p;
+    float r2 = dot(p, p);
+    float k = max((1.6) / (r2), 0.0274);
+    p *= k;
+    scale *= k;
+}
+
+float l = length(p.xyz);
+float rxy = l - 1.4;
+float n = 1.0 * p.z;
+rxy = max(rxy, -(n) / 4.);
+dist = (rxy) / abs(scale);
+
+return dist * 1.5;
+}
+
+inline float FCT_CRAB(float3 pos) {
+float3 p = pos * 0.002; // <-- 3D Position
+float4 q = float4(p - 1.0, 1); // <-- 4D Map onto Position
+
+for (int i = 0; i < 7; i++) { // <-- Primary iteration
+    q.xyz = abs(q.xyz + 1.3) - 1.0;
+    q /= clamp(dot(q.xyz, q.xyz), 0.0, 0.8);
+    q *= 1.867; // + p.y*0.8;
+    q = q.zxyw;                              // \ Lines present only
+    q += float4(0.2119, 0.8132, 0.077213, 0.); // / in this loop
+}
+
+for (int i = 0; i < 4; i++) { // <-- Secondary iteration
+    q.xyz = abs(q.xyz + 1.3) - 1.0;
+    q /= clamp(dot(q.xyz, q.xyz), 0.0, 0.8);
+    q *= 1.867; // + p.y*0.8;
+}
+
+return (length(q.yz) - 1.2) / q.w * 300.; // <-- Distance
+}
+
+float FCT_BBSK(float3 pos, float3 Params) {
+// Notable Params: (2.18 -0.18 0)
+    //float3 cFcParams = float3(2.18, -0.18, 0);
+    float3 cFcParams = Params;
+    float3 CSize = float3(1.4,0.87, 1.1);
+    float3 p = pos.xzy * 2.0;
+    float scale = 1.0;
+    
+    for( int i=0; i < 4;i++ )
+    {
+        p = 2.0*clamp(p, -CSize, CSize) - p;
+        //float r2 = dot(p,p);
+        float r2 = dot(p,p+sin(p.z*.5)); //Alternate fractal
+        float k = max((2.)/(r2), .17);
+        p *= k;
+        //p *=rot;
+        //p= p.yzx;
+        p+=float3(0.2,0.2,-0.5);
+        scale *= k;
+    }
+
+    p = 2.0*clamp(p, -CSize * 4., CSize * 4.) - p;
+   
+    for(int i=0; i < 8; i++ )
+    {
+        p = 2.0*clamp(p, -CSize, CSize) - p;
+        float r2 = dot(p,p);
+        //float r2 = dot(p,p+sin(p.z*.3)); //Alternate fractal
+        float k = max((cFcParams.x)/(r2),  0.027);
+        p     *= k;
+        scale *= k;
+        p.y += cFcParams.y;
+    }
+    
+    float l = length(p.xy);
+    //l = mix(l,l2,0.5);
+    float rxy = l - 4.0;
+    float n = 1.0 * p.z;
+    rxy = max(rxy, -(n) / 4.);
+    float dist = (rxy) / abs(scale);
+    dist *=.75;
+
+    return dist;
+
+}
+
+inline float FCT_HUB(float3 pos, float3 Params) {
+// Notable Params: (0.514 -2.28 0.83), (0.644 -2.28 0.83)
+float3 cFcParams = Params;
+
+float3 p = pos.yzx * 0.05; // <-- 3D Position
+float4 q = float4(p - 1.0, 1); // <-- 4D Map onto Position
+
+for (int i = 0; i < 8; i++) { // <-- Primary iteration (All lines shared)
+    q.xyz = abs(q.xyz + cFcParams.z) - 1.0;
+    q /= clamp(dot(q.xyz, q.xyz), 0.12, 1.0);
+    q *= 1.0 + cFcParams.x;
+    //q.xyz *= cFcRot;
+}
+
+tex = q.x; // <-- Texture Primary
+
+for (int i = 0; i < 2; i++) { // <-- Secondary iteration
+    q.xyz = abs(q.xyz + cFcParams.z) - 1.0;
+    q /= clamp(dot(q.xyz, q.xyz), 0.12, 1.0);
+    q *= 1.0 + cFcParams.x;
+    //q.xyz *= cFcRot;
+}
+
+return (length(q.xyz) - 1. + cFcParams.y) / q.w * 19.; // <-- Distance
+}
+
+inline float FCT_HYPERAPO(float3 pos, float3 Params) {
+// Notable Params: (0.644 -2.28 0.83), (0.067 1.05 -5.58), (0.76 0.91 4.22)
+float3 cFcParams = Params;
+float3 CSize = float3(1., 1., 1.1); // <-- CSize Constant
+float3 p = pos.yzx; // <-- 3D Position
+float scale = 1.0; // <-- Scale
+
+for (int i = 0; i < 4; i++) { // <-- Primary iteration
+    p = 2.0 * clamp(p, -CSize, CSize) - p;
+    float r2 = dot(p, p);
+    float k = max((2.) / (r2), 0.067);
+    p *= k;
+    p.xyz = float3(1.0 * p.z, 1.0 * p.x, -1.0 * p.y); // Line present only in this loop
+    scale *= k;
+}
+
+p = p.zxy;
+//p *= cFcRot;
+
+CSize = float3(1.2, cFcParams.x, 1.2); // <-- CSize Constant
+tex = p.y; // <-- Texture Primary
+
+for (int i = 0; i < 7; i++) { // <-- Secondary iteration
+    p = 2.0 * clamp(p, -CSize, CSize) - p;
+    float r2 = dot(p, p);
+    float k = max((1.6) / (r2), cFcParams.y);
+    p *= k;
+    scale *= k;
+}
+
+float l = length(p.xyz);
+float rxy = l - 1.4;
+float n = 1.0 * p.z;
+rxy = max(rxy, -(n) / 4.);
+
+return (rxy) / abs(scale); // <-- Distance
+}
+
+inline float FCT_DLBT(float3 pos, float3 Params) {
+// Notable Params: (-24.63 16.16 101.07)
+float3 cFcParams = Params;
+float3 npos = pos;
+float noise = noise3d(npos * 0.07) * 10.;
+float3 apopos = pos.xzy;
+apopos.z += cFcParams.x;
+domainRep3(apopos, float3(250., 250., 0));
+float r2 = 0.;
+float k = 0.;
+
+float3 CSize = float3(1., 1., 1.3); // <-- CSize Constant
+float3 p = apopos; // <-- 3D Position
+float scale = 1.0; // <-- Scale
+
+for (int i = 0; i < 5; i++) { // <-- Primary iteration (All lines shared)
+    p = 2.0 * clamp(p, -CSize, CSize) - p;
+    r2 = dot(p, p);
+    k = max((2.0) / (r2), .0274);
+    p *= k;
+    scale *= k;
+
+}
+
+tex = scale; // <-- Texture Primary
+
+for (int i = 0; i < 7; i++) { // <-- Secondary iteration
+    p = 2.0 * clamp(p, -CSize, CSize) - p;
+    r2 = dot(p, p);
+    k = max((2.0) / (r2), .0274);
+    p *= k;
+    scale *= k;
+}
+
+float l = length(p.xy);
+float rxy = l - 4.0;
+float n = 1.0 * p.z;
+rxy = max(rxy, -(n) / 4.);
+float apodist = (rxy) / abs(scale);
+apodist = 2. - apodist * 2.;
+dist = noise - apodist + 0.01 * (pos.y - 67.);
+dist *= 0.7;
+dist = smin(dist, pos.y + cFcParams.y, 15.);
+
+tex2 = p.z / scale; // <-- Texture Secondary
+return smin(dist, pos.y - cFcParams.z, -15.); // <-- Distance
+}
+
+inline float FCT_MZGN(float3 pos, float3 Params) {
+// Notable Params: A lot
+float3 cFcParams = Params;
+float3 p = pos * 0.01; // <-- 3D Position
+float4 q = float4(p, 1); // <-- 4D Map onto Position
+
+float4 qd;
+
+for (int i = 0; i < 12; i++) { // <-- Primary iteration
+    q.xyz = abs(q.xyz + 1.0 + cFcParams.y) - 1.0;
+    qd = q;
+    qd.w = qd.w * 0.002;
+    q /= clamp(dot(qd, qd), 0.0, 0.8);
+   // q.xyz *= cFcRot;
+    q *= 1.567 + cFcParams.x;
+}
+
+tex = q.w; // <-- Texture Primary
+tex2 = q.x; // <-- Texture Secondary
+return (length(q.xyz) - 3.5) / q.w * 100.; // <-- Distance
+}
+
+inline float FCT_PIPES(float3 pos) {
+float3 p = pos * 0.002; // <-- 3D Position
+float4 q = float4(p - 1.0, 1); // <-- 4D Map onto Position
+
+for (int i = 0; i < 11; i++) { // <-- Primary iteration
+    q.xyz = abs(q.xyz + 1.0) - 1.0;
+    q /= clamp(dot(q.xyz, q.xyz), 0.12, 1.0);
+    q *= 1.837;
+}
+
+tex = q.y; // <-- Texture Primary
+tex2 = q.w; // <-- Texture Secondary
+return (length(q.xz) - 1.2) / q.w * 500.; // <-- Distance
+}
+
+inline float FCT_APOP(float3 pos, float3 Params) {
+// Notable Params: (1.11 4.48 0.07)
+float3 cFcParams = Params;
+float3 p = pos * 0.01; // <-- 3D Position
+float scale = 1.0; // <-- Scale
+
+for (int i = 0; i < 10; i++) { // <-- Primary iteration
+    p = -1.0 + 2.0 * fract(0.5 * p + 0.5);
+    float r2 = dot(p, p);
+    float k = cFcParams.x / r2;
+    p *= k;
+    scale *= k;
+    //p *= cFcRot;
+}
+
+dist = length(p) / scale;
+
+return dist * 25.; // <-- Distance
+}
+
+inline float FCT_APO(float3 pos) {
+float3 CSize = float3(1.7, 1.7, 1.3); // <-- CSize Constant
+float3 p = pos.xzy; // <-- 3D Position
+float scale = 1.; // <-- Scale
+
+for (int i = 0; i < 12; i++) { // <-- Primary iteration
+    p = 2.0 * clamp(p, -CSize, CSize) - p;
+    float r2 = dot(p, p);
+    float k = max((2.) / (r2), .027);
+    p *= k;
+    scale *= k;
+}
+
+float l = length(p.xyz);
+float rxy = l - 4.0;
+float n = l * p.z;
+rxy = max(rxy, -(n) / 4.);
+dist = (rxy) / abs(scale);
+
+return max(dist, pos.x); // <-- Distance
+}
+
+inline float FCT_HTVT(float3 pos, float3 Params) {
+// Notable Params: (0.067 0.75 -0.02), (0.09 2.72 -0.51)
+float3 cFcParams = Params;
+float3 CSize = float3(1., 1., 1.3); // <-- CSize Constant
+float3 p = pos.yzx; // <-- 3D Position
+float scale = 1.0; // <-- Scale
+
+for (int i = 0; i < 4; i++) { // <-- Primary iteration
+    p = 2.0 * clamp(p, -CSize, CSize) - p;
+    float r2 = dot(p, p);
+    float k = max((2.) / (r2), cFcParams.x);
+    p *= k;
+    p.xyz = float3(1.0 * p.z, 1.0 * p.x, -1.0 * p.y); // Line present only in this loop
+    scale *= k;
+}
+
+p = p.zxy;
+//p *= cFcRot;
+
+CSize = float3(1.2, 0.4, 1.4); // <-- CSize Constant
+tex2 = p.x; // <-- Texture Secondary
+
+for (int i = 0; i < 8; i++) { // <-- Secondary iteration
+    p = 2.0 * clamp(p, -CSize, CSize) - p;
+    float r2 = dot(p, p);
+    float k = max((1.6) / (r2), cFcParams.y);
+    p *= k;
+    scale *= k;
+}
+
+float l = length(p.xyz);
+float rxy = l - 1.4;
+float n = 1.0 * p.z;
+rxy = max(rxy, -(n) / 4.);
+dist = (rxy) / abs(scale) - 0.0005;
+
+tex = min(scale, 150.); // <-- Texture Primary
+return dist * 1.4; // <-- Distance
+}
+
+// Knighty's Pseudo Kleinian Fractal
+inline float FCT_KNKL(float3 pos, float3 Params) {
+// Notable Params: (-0.05 -0.37 0.07), (-0.84 0.97 0.13)
+float3 cFcParams = Params;
+float3 CSize = float3(0.97478, 1.4202, 0.97478); // <-- CSize Constant
+float3 p = pos.xzy * 0.01; // <-- 3D Position
+float3 C = cFcParams;
+
+float DEfactor = 1.;
+float3 ap = p + float3(1.,1.,1.);
+
+for (int i = 0; i < 11; i++) { // <-- Primary iteration
+    if (ap.x != p.x && ap.y != p.y && ap.z != p.z) {continue;}
+    ap = p;
+    p = 2. * clamp(p, -CSize, CSize) - p;
+    float r2 = dot(p, p);
+    float k = max(1.0 / r2, 1.);
+    p *= k;
+    DEfactor *= k;
+    p += C;
+}
+
+tex = p.y; // <-- Texture Primary
+tex2 = DEfactor; // <-- Texture Secondary
+return (0.5 * (p.z) / DEfactor) * 70; // <-- Distance
+}
+
+inline float FCT_KIFS(float3 pos, float3 Params) {
+// No notable Params, just experiment!
+float3 cFcParams = Params;
+float3 p = pos * 0.01; // <-- 3D Position
+
+float l = 0.0;
+float3 Fold = float3(3.,3.,3.);
+
+for (int i = 0; i < 12; i++) { // <-- Primary iteration
+    p.xyz = abs(p.xyz + Fold.xyz) - Fold.xyz;
+    p = p * cFcParams.x;
+    //p *= cFcRot;
+}
+
+l = length(p);
+
+return (l * pow(cFcParams.x, -12.) - 0.001) * 100.; // <-- Distance
+}
+
+
+inline float FCT_TEXT(float3 pos) {
+float3 p = pos; // <-- 3D Position
+
+float3 cell = domainRep3Idx(p, float3(12., 8., 12.));
+float3 h = float3(hash(cell.y), hash(cell.z + cell.x), hash(cell.x));
+float rot = h.x + h.y + h.z * 6.3;
+float2 sc = float2(sin(rot), cos(rot));
+p.xz = float2(sc.y * p.x - sc.x * p.z, sc.y * p.z + sc.x * p.x);
+float3 cube = abs(p) - float3(3.,3.,3.);
+cube *= 0.9;
+dist = length(max(cube, 0.0)) - 1.5;
+p += float3(5.,5.,5.);
+dist = max(dist, pos.y - 54.);
+if (dist < 2.) {
+    //float4 vol = texture3D(sVolumeMap, clamp(p.zxy * 0.1, 0., 1.)) * 0.9;
+    float d = 2.; //* (vol.r + vol.g + vol.b);
+    dist = smax(dist - 1.5, d * 1.0 - 0.1, 2.);
+} else {
+    dist += 1.;
+}
+
+return min(dist, pos.y + 4.); // <-- Distance
+}
+
+
+inline float FCT_TEST(float3 pos) {
+float3 pos1 = pos; // <-- 3D Position
+float3 pos2 = pos; // <-- 3D Position
+
+domainRep3(pos1, float3(45., 45., 45.));
+domainRep3(pos2, float3(5., 5., 5.));
+dist = length(pos1) - 35.;
+
+tex = dist; // <-- Texture Primary
+tex2 = length(pos2); // <-- Texture Secondary
+
+dist = smin(dist, tex2 - 5., -4.);
+
+return min(dist, pos.y); // <-- Distance
+}
+

@@ -369,7 +369,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 1563861312}
+  - {fileID: 2028850790}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -428,7 +428,7 @@ MonoBehaviour:
   Loop: 160
   MinimumDistance: 0.0001
   DistanceMultiplier: 1.25
-  fractal: 13
+  fractal: 34
   fractalTexutre: {fileID: 2800000, guid: b911351f32709594f9855b2e02be5149, type: 3}
   Color: {r: 0, g: 0, b: 0, a: 0}
   Metallic: 1
@@ -436,7 +436,9 @@ MonoBehaviour:
   _fractal: {x: 0, y: -3.71, z: -0.5, w: 0}
   _fractalSmooth: 0
   _fractaldegreeRotate: {x: 0, y: 0, z: 0}
+  _fractalScale: {x: 1, y: 1, z: 1}
   _power: 2
+  Params: {x: 0, y: 0, z: 0}
   _modBool: {x: 0, y: 0, z: 0}
   _modInterval: {x: 0, y: 0, z: 0}
 --- !u!1 &1505118575 stripped
@@ -479,39 +481,6 @@ MonoBehaviour:
     actionPath: /actions/default/in/TouchPad
     needsReinit: 0
   speed: 5
---- !u!21 &1563861312
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarching/Forward_ModWorld_for_VR
-  m_Shader: {fileID: 4800000, guid: 8ab7d6ce3b99a104485ae8ceb8289e65, type: 3}
-  m_ShaderKeywords: _ZWRITE_ON
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _Texture:
-        m_Texture: {fileID: 2800000, guid: b911351f32709594f9855b2e02be5149, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _Cull: 0
-    - _DistanceMultiplier: 1.25
-    - _Glossiness: 0
-    - _Loop: 160
-    - _Metallic: 1
-    - _MinDistance: 0.0001
-    - _ZWrite: 1
-    m_Colors:
-    - _Color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1001 &1702513628
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -787,3 +756,36 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1702513628}
   m_PrefabAsset: {fileID: 0}
+--- !u!21 &2028850790
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Raymarching/Forward_ModWorld_for_VR
+  m_Shader: {fileID: 4800000, guid: 8ab7d6ce3b99a104485ae8ceb8289e65, type: 3}
+  m_ShaderKeywords: _ZWRITE_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Texture:
+        m_Texture: {fileID: 2800000, guid: b911351f32709594f9855b2e02be5149, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Cull: 0
+    - _DistanceMultiplier: 1.25
+    - _Glossiness: 0
+    - _Loop: 160
+    - _Metallic: 1
+    - _MinDistance: 0.0001
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 0, g: 0, b: 0, a: 0}
