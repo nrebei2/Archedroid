@@ -29,3 +29,5 @@ sysinfo.txt
 /obj/Debug/
 /Packages/
 /unityProject.vrmanifest
+/Assets/Plugins/
+/Assets/Plugins.meta
