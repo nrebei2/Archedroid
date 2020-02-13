@@ -72,7 +72,7 @@ uniform float _ReflectionIntensity;
 uniform float _EnvReflIntenisty;
 uniform samplerCUBE _ReflectionCube;
 
-uniform float4 _fractal;
+uniform float3 _fractalPosition;
 uniform float _fractalSmooth;
 uniform float3 _fractaldegreeRotate;
 uniform float3 _fractalScale;
@@ -92,7 +92,7 @@ inline float DistanceFunction(float3 p)
 {
     //TODO: Fix optimization, specifially in this part of the code
     
-    p = RotateZ(RotateY(RotateX(p - _fractal.xyz, _fractaldegreeRotate.x), _fractaldegreeRotate.y), _fractaldegreeRotate.z);
+    p = RotateZ(RotateY(RotateX(p - _fractalPosition, _fractaldegreeRotate.x), _fractaldegreeRotate.y), _fractaldegreeRotate.z);
     p = ScaleX(p, _fractalScale.x);
     p = ScaleY(p, _fractalScale.y);
     p = ScaleZ(p, _fractalScale.z);
@@ -161,9 +161,9 @@ inline float DistanceFunction(float3 p)
         case 16:
             return trinoise(p);     
             break;  
-        case 17:
+        /*case 17:
             return RecursiveTetrahedron(p, 3);     
-            break;  
+            break;  */
         case 18:
             return TruchetTentacles(p);     
             break;

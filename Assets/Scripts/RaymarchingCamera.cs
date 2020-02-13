@@ -54,13 +54,25 @@ public class RaymarchingCamera : MonoBehaviour
     public Color Color;
     public float Metallic;
     public float Smoothness;
-    private float _fractalNumber;
-    public Vector4 _fractal;
+    
+    public static float _fractalNumber;
+
+    public static Vector3 _fractalPosition;
+    public Vector3 fractalPosition;
+    
     public float _fractalSmooth;
-    public Vector3 _fractaldegreeRotate;
-    public Vector3 _fractalScale;
-    public float _power;
-    public Vector3 Params;
+    public static Vector3 _fractaldegreeRotate;
+    public Vector3 fractaldegreeRotate;
+    
+    public static Vector3 _fractalScale;
+    public Vector3 fractalScale;
+    
+    public static float _power;
+    public float power;
+    
+    public static Vector3 Params;
+    public Vector3 Parameters;
+    
 
     [Header("Make Object Repeat Indefinitely on Axis (Value 1 is True, Any Other Value is False)")]
     public Vector3 _modBool;
@@ -93,11 +105,16 @@ public class RaymarchingCamera : MonoBehaviour
 
     void Update()
     {
-        
+        _power = power;
+        Params = Parameters;
+        _fractalScale = fractalScale;
+        _fractaldegreeRotate = fractaldegreeRotate;
+        _fractalPosition = fractalPosition;
+
         rend.sharedMaterial.SetVector("_modBool", _modBool);
         rend.sharedMaterial.SetVector("_modInterval", _modInterval);
         
-        rend.sharedMaterial.SetVector("_fractal", _fractal);
+        rend.sharedMaterial.SetVector("_fractalPosition", _fractalPosition);
         rend.sharedMaterial.SetFloat("_fractalSmooth", _fractalSmooth);
         rend.sharedMaterial.SetVector("_fractaldegreeRotate", _fractaldegreeRotate);
         rend.sharedMaterial.SetVector("_fractalScale", _fractalScale);

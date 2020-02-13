@@ -494,9 +494,10 @@ float trinoise(float3 p)
 {
     return trinoise(p, 1.0, 1.0);
 }
-
-inline float RecursiveTetrahedron(float3 p, int loop)
+/*
+float RecursiveTetrahedron(float3 p, int loop)
 {
+
     p = Repeat(p / 2, 3.0);
 
     const float3 a1 = float3( 1.0,  1.0,  1.0);
@@ -516,8 +517,10 @@ inline float RecursiveTetrahedron(float3 p, int loop)
     }
  
     return length(p) * pow(scale, float(-n));
+    
+    return 0;
 }
-
+*/
 // original code: https://www.shadertoy.com/view/ldfGWn
 inline float truchetarc(float3 pos)
 {
