@@ -61,9 +61,23 @@ public class RaymarchCollider : MonoBehaviour
         Vector3 playerV = rb.velocity;
         //sdfNormal = getNormal(position);
 
-        // More progress, and it seems that the object does notice that is is moving away or closer to the sdf, but it seems that the scales are all wrong. Look at sierpenski, for example.
-        // even so, something is still broken...
-        // The menger sponge seems to be working perfectly. The object now knows that it isn't just a solid cube.
+        // First of all, the merger sponge seems to be working perfectly. The object now knows that it isn't just a solid cube, which is nice.
+        // The return value for the sdf still works such that:
+        // 1. if the center of the object is inside the surface, sdf returns a negative number.
+        // 2. if the center of the object is outside the surface, sdf returns a positive number.
+        // 3. if the center of the object is EXACTLY on the surface, sdf returns a 0.
+        // 4. sdf return value increases as object moves away from surface, and decreases as object moves further inside surface.
+        // but, the scales for the return values are all wrong. Look at the sierpenski, for example.
+        
+        // Which means, there is a possible fix...
+        // instead of using the position at the center of the object, make multiple positions around the edges of the object.
+        // if distance <= 0, we have a collision!
+        // for example, in terms of a player, we only really need one for the feet, left and right sides of the body, and the top of the head (4 separate calculations).
+        
+        // this kinda sucks as we would have to use more calculations for the same result, but isn't this exactly how normal collisions are calculated? 
+        
+        // im pretty sure there still is a simple fix to this problem with the scale..., i mean why do the merger sponge and plane, and i assume others, work perfectly? And why do some don't?
+
 
         //Check if the distance estimate indicates a collision
         if (distance <= 0.5)
