@@ -24,9 +24,12 @@ public class RaymarchCollision : MonoBehaviour
     private const float MAX_DIST = 10f;
     private const float MIN_DIST = 0.01f;
 
-    private const float STATIC_GRAVITY_MODIFIER  = 1.2f;
+    private const float STATIC_GRAVITY_MODIFIER  = 1.5f;
     private const float BUERIED_GRAVITY_MODIFIER = 3f;
 
+    private const int RaysToShoot = 30;
+    float angle = 0;
+    
     private Rigidbody rigidbody_;
 
     struct RaymarchingResult
@@ -47,7 +50,7 @@ public class RaymarchCollision : MonoBehaviour
         var pos  = transform.position + radius * dir;
         var loop = 0;
 
-        for (loop = 0; loop < 100; ++loop) {
+        for (loop = 0; loop < 10; ++loop) {
             dist = DistanceFunction.CalcDistance(pos);
             len += dist;
             pos += dir * dist;
@@ -70,65 +73,97 @@ public class RaymarchCollision : MonoBehaviour
     void Start()
     {
         rigidbody_ = GetComponent<Rigidbody>();
-    }   
+    }
 
     void FixedUpdate()
     {
-        bruh = DistanceFunction.CalcDistance(transform.position);
-        // TODO: Find out why RaymarchingCamera._fractalNumber only returns 0; 
-        Debug.Log(RaymarchingCamera._fractalNumber);
-        
-        // Currently there is only 1 direction of raymarching to check collision, which is the direction the object is moving.
-        // Maybe try raymarching in 15 different directions around the sphere?
-        var ray = Raymarching(rigidbody_.velocity.normalized);
-        var v = rigidbody_.velocity;
-        var g = Physics.gravity;
-        
-        if (ray.isBuried) {
-            rigidbody_.AddForce((rigidbody_.mass * g.magnitude * BUERIED_GRAVITY_MODIFIER) * ray.normal);
-        } else if (ray.length < MIN_DIST) {
-            var prod = Vector3.Dot(v.normalized, ray.normal);
-            var vv = (prod * v.magnitude) * ray.normal;
-            var vh = v - vv;
-            rigidbody_.velocity = vh * (1f - friction) + (-vv * restitution);
-            rigidbody_.AddForce(-rigidbody_.mass * STATIC_GRAVITY_MODIFIER * g);
-            rigidbody_.AddTorque(-rigidbody_.angularVelocity * (1f - angularFriction));
-        }
 
+
+
+        bruh = DistanceFunction.CalcDistance(transform.position);
+
+        float inverseResolution = 60f;
+        Vector3 dir = Vector3.right;
+        int steps = Mathf.FloorToInt(360f / inverseResolution);
+        UnityEngine.Quaternion xRotation = UnityEngine.Quaternion.Euler(Vector3.right * inverseResolution);
+        UnityEngine.Quaternion yRotation = UnityEngine.Quaternion.Euler(Vector3.up * inverseResolution);
+        UnityEngine.Quaternion zRotation = UnityEngine.Quaternion.Euler(Vector3.forward * inverseResolution);
+        for (int x = 0; x < steps / 2; x++)
+        {
+            dir = zRotation * dir;
+            for (int y = 0; y < steps; y++)
+            {
+                dir = xRotation * dir;
+                
+                var ray = Raymarching(dir);
+                var v = rigidbody_.velocity;
+                var g = Physics.gravity;
         
+                if (ray.isBuried) {
+                    rigidbody_.AddForce((rigidbody_.mass * g.magnitude * BUERIED_GRAVITY_MODIFIER) * ray.normal);
+                } else if (ray.length < MIN_DIST) {
+                    var prod = Vector3.Dot(v.normalized, ray.normal);
+                    var vv = (prod * v.magnitude) * ray.normal;
+                    var vh = v - vv;
+                    rigidbody_.velocity = vh * (1f - friction) + (-vv * restitution);
+                    rigidbody_.AddForce(-rigidbody_.mass * STATIC_GRAVITY_MODIFIER * g);
+                    rigidbody_.AddTorque(-rigidbody_.angularVelocity * (1f - angularFriction));
+                }
+            }
+        }
     }
 
     // Raycasts showing distance from the object and the normal where the forward ray hits.
     // and it works lol
-    private void Update()
+    /*private void Update()
     {
-        var dist = 0f ;
-        var len = 0f ;
-        var pos = transform.position;
-        var dir = transform.forward;
 
-        for ( int i = 0 ; i < 100 ; ++ i) {
-            dist = DistanceFunction.CalcDistance (pos);
-            len += dist;
-            pos += dir * dist;
-            if (dist <MIN_DIST || len> MAX_DIST) break ;
-        }
+        Ray ray = new Ray();
+        ray.origin = transform.position;
+        float inverseResolution = 36f;
+        Vector3 dir = Vector3.right;
+        int steps = Mathf.FloorToInt(360f / inverseResolution);
+        UnityEngine.Quaternion xRotation = UnityEngine.Quaternion.Euler (Vector3.right * inverseResolution);
+        UnityEngine.Quaternion yRotation = UnityEngine.Quaternion.Euler(Vector3.up * inverseResolution);
+        UnityEngine.Quaternion zRotation = UnityEngine.Quaternion.Euler(Vector3.forward * inverseResolution);
+        for(int x=0; x < steps/2; x++) {
+            dir = zRotation * dir;
+            for(int y=0; y < steps; y++) {
+                dir = xRotation * dir;
+                
+                var dist = 0f;
+                var len = 0f;
+                var pos = transform.position;
 
-        if (dist> MIN_DIST) {
-            Debug.DrawLine (transform.position, pos, Color.blue);
-        } else {
-            var normal = DistanceFunction.CalcNormal (pos);
-            Debug.DrawLine (transform.position, pos, Color.black);
-            Debug.DrawLine (pos, pos + normal, Color.yellow);
+                for (int j = 0; j < 30; ++j)
+                {
+                    dist = DistanceFunction.CalcDistance(pos);
+                    len += dist;
+                    pos += dir * dist;
+                    if (dist < MIN_DIST || len > MAX_DIST) break;
+                }
+
+                if (dist > MIN_DIST)
+                {
+                    Debug.DrawLine(transform.position, pos, Color.blue);
+                }
+                else
+                {
+                    var normal = DistanceFunction.CalcNormal(pos);
+                    Debug.DrawLine(transform.position, pos, Color.black);
+                    Debug.DrawLine(pos, pos + normal, Color.yellow);
+                }
+            }
         }
-    }
+    }*/
 }
 
 public static class DistanceFunction
 {
     public static float CalcDistance(Vector3 p)
     {
-        /*p = RotateZ(RotateY(RotateX(p - RaymarchingCamera._fractalPosition, RaymarchingCamera._fractaldegreeRotate.x), RaymarchingCamera._fractaldegreeRotate.y), RaymarchingCamera._fractaldegreeRotate.z);
+        //Debug.Log(RaymarchingCamera._fractalNumber);
+        p = RotateZ(RotateY(RotateX(p - RaymarchingCamera._fractalPosition, RaymarchingCamera._fractaldegreeRotate.x), RaymarchingCamera._fractaldegreeRotate.y), RaymarchingCamera._fractaldegreeRotate.z);
         p = ScaleX(p, RaymarchingCamera._fractalScale.x);
         p = ScaleY(p, RaymarchingCamera._fractalScale.y);
         p = ScaleZ(p, RaymarchingCamera._fractalScale.z);
@@ -141,7 +176,8 @@ public static class DistanceFunction
         }
         if (_modBool.z == 1) {
             p.z = Repeat(p.z, _modInterval.z);
-        }#1#
+        }*/
+        
         switch (RaymarchingCamera._fractalNumber)
         {
             case 0:
@@ -183,9 +219,9 @@ public static class DistanceFunction
             case 12:
                 return MengerSponge(p);
                 break;      
-            case 13:*/
+            case 13:
                 return apo(p, .0274f, float3(1, 1, 1.3f), float3(0, 0, 0));
-                /*break; 
+                break; 
             case 14:
                 return sdPlane(p, float4(0,1,0,0));
                 break;    
@@ -197,7 +233,7 @@ public static class DistanceFunction
                 break;  
             /*case 17:
                 return RecursiveTetrahedron(p, 3);     
-                break; #1# 
+                break; */
             case 18:
                 return TruchetTentacles(p);     
                 break;
@@ -252,7 +288,7 @@ public static class DistanceFunction
             default:
                 return apo(p, .0274f, float3(1f, 1f, 1.3f), float3(0f, 0f, 0f));
                 break;         
-        }*/
+        }
     }
 
     public static Vector3 CalcNormal(Vector3 pos)
