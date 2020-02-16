@@ -122,7 +122,7 @@ FragOutput Frag(VertOutput i)
 
     float4 color = 0;
     color += LightingStandard(so, worldViewDir, gi);
-    //color.rgb += so.Emission;
+    color.rgb += so.Emission;
     color.a = 0.0;
 
     FragOutput o;
@@ -135,8 +135,8 @@ FragOutput Frag(VertOutput i)
 #if (defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2))
     //i.fogCoord.x = mul(UNITY_MATRIX_VP, float4(ray.endPos, 1.0)).z;
 #endif
-   // UNITY_APPLY_FOG(i.fogCoord, o.color);
-   // UNITY_OPAQUE_ALPHA(o.color.a);
+    //UNITY_APPLY_FOG(i.fogCoord, o.color);
+    UNITY_OPAQUE_ALPHA(o.color.a);
 
     return o;
 }
