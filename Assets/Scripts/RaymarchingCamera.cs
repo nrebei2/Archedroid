@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 using UnityEditor;
 #endif
 using System.Collections.Generic;
+using Valve.VR.InteractionSystem;
 
 [ExecuteInEditMode]
 public class RaymarchingCamera : MonoBehaviour
@@ -106,6 +107,9 @@ public class RaymarchingCamera : MonoBehaviour
     void Update()
     {
         _power = power;
+        Parameters.x = LinearParamX.currentLinearMapping;
+        Parameters.y = LinearParamY.currentLinearMapping;
+        Parameters.z = LinearParamZ.currentLinearMapping;
         Params = Parameters;
         _fractalScale = fractalScale;
         _fractaldegreeRotate = fractaldegreeRotate;
