@@ -9,29 +9,44 @@ using UnityEngine.UIElements;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 using Vector4 = UnityEngine.Vector4;
-
+using Valve.VR;
+using Valve.VR.InteractionSystem;
 
 [ExecuteInEditMode]
 public class RaymarchCollision : MonoBehaviour
 {
-    [SerializeField] float radius          = 0.5f;
-    [SerializeField] float friction        = 0.3f;
-    [SerializeField] float angularFriction = 0.6f;
-    [SerializeField] float restitution     = 0.9f;
-
-    public float bruh;
     
+    public SteamVR_Action_Vector2 input;
+    
+    public float Speed = 1f;
+    public float JumpHeight = 2f;
+    public LayerMask Ground;
+    
+    public float GroundDistance = 0.2f;
+    public bool _isGrounded = false;
+    public bool groundedinfractal = false;
+    
+    public Transform _groundChecker;
+    
+    float radius          = 0.5f;
+    float friction        = 0.3f;
+    float angularFriction = 0.6f;
+    float restitution     = 0.25f;
+
     private const float MAX_DIST = 10f;
     private const float MIN_DIST = 0.01f;
 
-    private const float STATIC_GRAVITY_MODIFIER  = 1.5f;
-    private const float BUERIED_GRAVITY_MODIFIER = 3f;
+    private float STATIC_GRAVITY_MODIFIER  = 1f;
+    private float BUERIED_GRAVITY_MODIFIER = 3f;
 
     private const int RaysToShoot = 30;
     float angle = 0;
     
     private Rigidbody rigidbody_;
 
+    [Header("First object is head, second is body, third is feet")]
+    public GameObject[] sphereCollisions;
+    
     struct RaymarchingResult
     {
         public int     loop;
@@ -43,11 +58,11 @@ public class RaymarchCollision : MonoBehaviour
         public Vector3 normal;
     }
 
-    RaymarchingResult Raymarching(Vector3 dir)
+    RaymarchingResult Raymarching(Vector3 dir, GameObject sphere)
     {
         var dist = 0f;
         var len  = 0f;
-        var pos  = transform.position + radius * dir;
+        var pos  = sphere.transform.position + radius * dir;
         var loop = 0;
 
         for (loop = 0; loop < 10; ++loop) {
@@ -60,7 +75,7 @@ public class RaymarchCollision : MonoBehaviour
         var result = new RaymarchingResult();
 
         result.loop      = loop;
-        result.isBuried  = DistanceFunction.CalcDistance(transform.position) < MIN_DIST;
+        result.isBuried  = DistanceFunction.CalcDistance(sphere.transform.position) < MIN_DIST;
         result.distance  = dist;
         result.length    = len;
         result.direction = dir;
@@ -77,39 +92,86 @@ public class RaymarchCollision : MonoBehaviour
 
     void FixedUpdate()
     {
-
-
-
-        bruh = DistanceFunction.CalcDistance(transform.position);
-
-        float inverseResolution = 60f;
-        Vector3 dir = Vector3.right;
-        int steps = Mathf.FloorToInt(360f / inverseResolution);
-        UnityEngine.Quaternion xRotation = UnityEngine.Quaternion.Euler(Vector3.right * inverseResolution);
-        UnityEngine.Quaternion yRotation = UnityEngine.Quaternion.Euler(Vector3.up * inverseResolution);
-        UnityEngine.Quaternion zRotation = UnityEngine.Quaternion.Euler(Vector3.forward * inverseResolution);
-        for (int x = 0; x < steps / 2; x++)
-        {
-            dir = zRotation * dir;
-            for (int y = 0; y < steps; y++)
-            {
-                dir = xRotation * dir;
-                
-                var ray = Raymarching(dir);
-                var v = rigidbody_.velocity;
-                var g = Physics.gravity;
+        // feet
+        groundedinfractal = Collision(Vector3.down, sphereCollisions[2]) ||
+                            Collision(Vector3.left, sphereCollisions[2]) ||
+                            Collision(Vector3.right, sphereCollisions[2]) ||
+                            Collision(new Vector3(0, 0, 1), sphereCollisions[2]) ||
+                            Collision(new Vector3(0, 0, -1), sphereCollisions[2]) ||
+                            Collision(rigidbody_.velocity.normalized, sphereCollisions[2]);
         
-                if (ray.isBuried) {
-                    rigidbody_.AddForce((rigidbody_.mass * g.magnitude * BUERIED_GRAVITY_MODIFIER) * ray.normal);
-                } else if (ray.length < MIN_DIST) {
-                    var prod = Vector3.Dot(v.normalized, ray.normal);
-                    var vv = (prod * v.magnitude) * ray.normal;
-                    var vh = v - vv;
-                    rigidbody_.velocity = vh * (1f - friction) + (-vv * restitution);
-                    rigidbody_.AddForce(-rigidbody_.mass * STATIC_GRAVITY_MODIFIER * g);
-                    rigidbody_.AddTorque(-rigidbody_.angularVelocity * (1f - angularFriction));
-                }
+        // body
+        Collision(Vector3.left, sphereCollisions[1]);
+        Collision(Vector3.right, sphereCollisions[1]);
+        Collision(new Vector3(0, 0, 1), sphereCollisions[1]);
+        Collision(new Vector3(0, 0, -1), sphereCollisions[1]);
+        
+        // head
+        Collision(Vector3.up, sphereCollisions[0]);
+        Collision(Vector3.left, sphereCollisions[0]);
+        Collision(Vector3.right, sphereCollisions[0]);
+        Collision(new Vector3(0, 0, 1), sphereCollisions[0]);
+        Collision(new Vector3(0, 0, -1), sphereCollisions[0]);
+        Collision(rigidbody_.velocity.normalized, sphereCollisions[0]);
+        
+        
+        /*Collision(new Vector3(0, 1, 1));
+        Collision(new Vector3(0, 1, -1));
+        Collision(new Vector3(0, -1, 1));
+        Collision(new Vector3(0, -1, -1));
+        Collision(new Vector3(1, -1, 0));
+        Collision(new Vector3(1, 1, 0));
+        Collision(new Vector3(-1, 1, 0));
+        Collision(new Vector3(-1, -1, 0));*/
+    }
+
+    private bool Collision (Vector3 dir, GameObject sphere)
+    {
+        var ray = Raymarching(dir, sphere);
+        var v = rigidbody_.velocity;
+        var g = Physics.gravity;
+
+        if (ray.isBuried) {
+            rigidbody_.AddForce((rigidbody_.mass * g.magnitude * BUERIED_GRAVITY_MODIFIER) * ray.normal);
+            Debug.Log("buried!");
+            return true;
+        } else if (ray.length < MIN_DIST) {
+            var prod = Vector3.Dot(v.normalized, ray.normal);
+            var vv = (prod * v.magnitude) * ray.normal;
+            var vh = v - vv;
+            rigidbody_.velocity = vh * (1f - friction) + (-vv * restitution);
+            if (dir == Vector3.up)
+            {
+                rigidbody_.AddForce(-rigidbody_.mass * STATIC_GRAVITY_MODIFIER * -g);
             }
+            else
+            {
+                rigidbody_.AddForce(-rigidbody_.mass * STATIC_GRAVITY_MODIFIER * g);
+            }
+            rigidbody_.AddTorque(-rigidbody_.angularVelocity * (1f - angularFriction));
+            return true;
+            //Debug.DrawLine(transform.position, ray.position, Color.black);
+            //Debug.DrawLine(ray.position, ray.position + ray.normal, Color.yellow);
+        }
+        else
+        {
+            //Debug.DrawLine(transform.position, ray.position, Color.blue);
+            //groundedinfractal = false;
+            return false;
+        }
+    }
+
+    private void Update()
+    {
+        Vector3 direction = Player.instance.hmdTransform.TransformDirection(new Vector3(input.axis.x, 0, input.axis.y));
+        rigidbody_.MovePosition(rigidbody_.position + Vector3.ProjectOnPlane(direction, Vector3.up) * Speed * Time.fixedDeltaTime);
+
+        
+        _isGrounded = Physics.CheckSphere(_groundChecker.position, GroundDistance, Ground, QueryTriggerInteraction.Ignore) || groundedinfractal;;
+        
+        if (Input.GetButtonDown("Jump") && _isGrounded)
+        {
+            rigidbody_.AddForce(Vector3.up * Mathf.Sqrt(JumpHeight * -2f * Physics.gravity.y), ForceMode.VelocityChange);
         }
     }
 
@@ -120,8 +182,32 @@ public class RaymarchCollision : MonoBehaviour
 
         Ray ray = new Ray();
         ray.origin = transform.position;
-        float inverseResolution = 36f;
-        Vector3 dir = Vector3.right;
+        float inverseResolution = 60f;
+        Vector3 dir = Vector3.down;
+        
+        var ogdist = 0f;
+        var oglen = 0f;
+        var ogpos = transform.position;
+
+        for (int j = 0; j < 30; ++j)
+        {
+            ogdist = DistanceFunction.CalcDistance(ogpos);
+            oglen += ogdist;
+            ogpos += dir * ogdist;
+            if (ogdist < MIN_DIST || oglen > MAX_DIST) break;
+        }
+
+        if (ogdist > MIN_DIST)
+        {
+            Debug.DrawLine(transform.position, ogpos, Color.blue);
+        }
+        else
+        {
+            var normal = DistanceFunction.CalcNormal(ogpos);
+            Debug.DrawLine(transform.position, ogpos, Color.black);
+            Debug.DrawLine(ogpos, ogpos + normal, Color.yellow);
+        }
+        
         int steps = Mathf.FloorToInt(360f / inverseResolution);
         UnityEngine.Quaternion xRotation = UnityEngine.Quaternion.Euler (Vector3.right * inverseResolution);
         UnityEngine.Quaternion yRotation = UnityEngine.Quaternion.Euler(Vector3.up * inverseResolution);
@@ -129,7 +215,7 @@ public class RaymarchCollision : MonoBehaviour
         for(int x=0; x < steps/2; x++) {
             dir = zRotation * dir;
             for(int y=0; y < steps; y++) {
-                dir = xRotation * dir;
+                dir = yRotation * dir;
                 
                 var dist = 0f;
                 var len = 0f;
