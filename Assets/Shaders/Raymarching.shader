@@ -38,7 +38,7 @@ Cull [_Cull]
 
 CGINCLUDE
 
-#define WORLD_SPACE
+//#define WORLD_SPACE
 
 #define OBJECT_SHAPE_NONE
 
@@ -303,7 +303,7 @@ inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)
     // find where exactly in the code brings up the black areas around the edges (Increasing "Loop" fixed that, though...)
     float ao = 1.0 - 1.0 * ray.loop / ray.maxLoop;
     o.Occlusion *= ao;
-    o.Emission += tex2D(_Texture, ray.endPos.xy * _Texture_ST.xy + _Texture_ST.zw);
+    o.Albedo.rgb = tex2D(_Texture, ray.endPos.xy * _Texture_ST.xy + _Texture_ST.zw);
     o.Emission *= ao;
     
     

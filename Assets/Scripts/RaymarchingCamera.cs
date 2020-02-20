@@ -51,6 +51,8 @@ public class RaymarchingCamera : MonoBehaviour
     
     [Header("Signed Distance Field")]
     public Fractal fractal;
+    
+    [Header("Texture and Lighting (Ambient light can be configured in lighting settings)")]
     public Texture fractalTexutre;
     public Color Color;
     public float Metallic;
@@ -98,14 +100,16 @@ public class RaymarchingCamera : MonoBehaviour
     private void Start()
     {
         rend = GetComponent<Renderer> ();
-        foreach(MeshRenderer mat in GetComponents<MeshRenderer>())
-        {
-            mat.material = material;
-        }
+        
     }
 
     void Update()
     {
+        foreach(MeshRenderer mat in GetComponents<MeshRenderer>())
+        {
+            mat.material = material;
+        }
+        
         _power = power;
         Parameters.x = LinearParamX.currentLinearMapping;
         Parameters.y = LinearParamY.currentLinearMapping;
@@ -146,7 +150,7 @@ public class RaymarchingCamera : MonoBehaviour
         rend.sharedMaterial.SetTexture("_Texture", fractalTexutre);
         rend.sharedMaterial.SetColor("_Color", Color);
         rend.sharedMaterial.SetFloat("_Metallic", Metallic);
-        rend.sharedMaterial.SetFloat("_Smoothness", Smoothness);
+        rend.sharedMaterial.SetFloat("_Glossiness", Smoothness);
 
         
         switch (fractal)

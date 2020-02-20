@@ -76,9 +76,9 @@ public class RaymarchCollision : MonoBehaviour
         var result = new RaymarchingResult();
 
         result.loop      = loop;
-        if (sphere == sphereCollisions[0]) { result.isBuried  = DistanceFunction.CalcDistance(sphere.transform.position + 0.42f * Vector3.up) < MIN_DIST; } // head
+        if (sphere == sphereCollisions[0]) { result.isBuried  = DistanceFunction.CalcDistance(sphere.transform.position + 0.45f * Vector3.up) < MIN_DIST; } // head
         if (sphere == sphereCollisions[1]) { result.isBuried  = DistanceFunction.CalcDistance(sphere.transform.position) < MIN_DIST; } // body
-        if (sphere == sphereCollisions[2]) { result.isBuried  = DistanceFunction.CalcDistance(sphere.transform.position - 0.42f * Vector3.up) < MIN_DIST; } // feet
+        if (sphere == sphereCollisions[2]) { result.isBuried  = DistanceFunction.CalcDistance(sphere.transform.position - 0.45f * Vector3.up) < MIN_DIST; } // feet
         result.distance  = dist;
         result.length    = len;
         result.direction = dir;

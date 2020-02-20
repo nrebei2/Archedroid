@@ -10,7 +10,7 @@ namespace Valve.VR.InteractionSystem
     {
         
         public LinearMapping linearMapping;
-        public static float currentLinearMapping = float.NaN;
+        public static float currentLinearMapping = 0f;
         
         // Start is called before the first frame update
         void Start()
