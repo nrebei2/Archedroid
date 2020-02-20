@@ -32,7 +32,7 @@ public class Flashlight_PRO : MonoBehaviour
 		// cache components
 		spotlight = Lights.transform.Find ("Spotlight").GetComponent<Light> ();
 		ambient_light_material = Lights.transform.Find ("ambient").GetComponent<Renderer> ().material;
-		ambient_mat_color = ambient_light_material.GetColor ("_TintColor");
+		//ambient_mat_color = ambient_light_material.GetColor ("_TintColor");
 	}
 	
 
@@ -51,7 +51,7 @@ public class Flashlight_PRO : MonoBehaviour
 
 		spotlight.intensity = (8 * percentage) / 100;
 
-		ambient_light_material.SetColor ("_TintColor", new Color(ambient_mat_color.r , ambient_mat_color.g , ambient_mat_color.b , percentage/2000)); 
+		//ambient_light_material.SetColor ("_TintColor", new Color(ambient_mat_color.r , ambient_mat_color.g , ambient_mat_color.b , percentage/2000)); 
 	}
 
 

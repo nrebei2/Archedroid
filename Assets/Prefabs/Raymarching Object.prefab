@@ -100,7 +100,7 @@ MonoBehaviour:
   fractalTexutre: {fileID: 2800000, guid: b911351f32709594f9855b2e02be5149, type: 3}
   Color: {r: 0, g: 0, b: 0, a: 0}
   Metallic: 0
-  Smoothness: 0
+  Smoothness: 0.2
   fractalPosition: {x: 0, y: 0, z: 0}
   _fractalSmooth: 0
   fractaldegreeRotate: {x: 0, y: 0, z: 0}
