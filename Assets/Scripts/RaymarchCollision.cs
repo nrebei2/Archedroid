@@ -29,7 +29,7 @@ public class RaymarchCollision : MonoBehaviour
     
     public Transform _groundChecker;
     
-    float radius          = 0.5f;
+    //float radius          = 0.5f;
     float friction        = 0.3f;
     float angularFriction = 0.6f;
     float restitution     = 0.0f;
@@ -59,7 +59,7 @@ public class RaymarchCollision : MonoBehaviour
         public Vector3 normal;
     }
 
-    RaymarchingResult Raymarching(Vector3 dir, GameObject sphere)
+    RaymarchingResult Raymarching(Vector3 dir, GameObject sphere, float radius)
     {
         var dist = 0f;
         var len  = 0f;
@@ -76,9 +76,9 @@ public class RaymarchCollision : MonoBehaviour
         var result = new RaymarchingResult();
 
         result.loop      = loop;
-        if (sphere == sphereCollisions[0]) { result.isBuried  = DistanceFunction.CalcDistance(sphere.transform.position + 0.45f * Vector3.up) < MIN_DIST; } // head
+        if (sphere == sphereCollisions[0]) { result.isBuried  = DistanceFunction.CalcDistance(sphere.transform.position + 0.9f * radius * Vector3.up) < MIN_DIST; } // head
         if (sphere == sphereCollisions[1]) { result.isBuried  = DistanceFunction.CalcDistance(sphere.transform.position) < MIN_DIST; } // body
-        if (sphere == sphereCollisions[2]) { result.isBuried  = DistanceFunction.CalcDistance(sphere.transform.position - 0.45f * Vector3.up) < MIN_DIST; } // feet
+        if (sphere == sphereCollisions[2]) { result.isBuried  = DistanceFunction.CalcDistance(sphere.transform.position - 0.9f * radius * Vector3.up) < MIN_DIST; } // feet
         result.distance  = dist;
         result.length    = len;
         result.direction = dir;
@@ -96,27 +96,27 @@ public class RaymarchCollision : MonoBehaviour
     void FixedUpdate()
     {
         // feet
-        groundedinfractal = Collision(Vector3.down, sphereCollisions[2]) ||
-                            Collision(Vector3.left, sphereCollisions[2]) ||
-                            Collision(Vector3.right, sphereCollisions[2]) ||
-                            Collision(new Vector3(0, 0, 1), sphereCollisions[2]) ||
-                            Collision(new Vector3(0, 0, -1), sphereCollisions[2]) ||
-                            Collision(rigidbody_.velocity.normalized, sphereCollisions[2]);
+        groundedinfractal = Collision(Vector3.down, sphereCollisions[2], 0.5f) ||
+                            Collision(Vector3.left, sphereCollisions[2], 0.5f) ||
+                            Collision(Vector3.right, sphereCollisions[2], 0.5f) ||
+                            Collision(new Vector3(0, 0, 1), sphereCollisions[2], 0.5f) ||
+                            Collision(new Vector3(0, 0, -1), sphereCollisions[2], 0.5f) ||
+                            Collision(rigidbody_.velocity.normalized, sphereCollisions[2], 0.5f);
         
         // body
-        Collision(Vector3.left, sphereCollisions[1]);
-        Collision(Vector3.right, sphereCollisions[1]);
-        Collision(new Vector3(0, 0, 1), sphereCollisions[1]);
-        Collision(new Vector3(0, 0, -1), sphereCollisions[1]);
-        Collision(rigidbody_.velocity.normalized, sphereCollisions[1]);
+        Collision(Vector3.left, sphereCollisions[1], 0.5f);
+        Collision(Vector3.right, sphereCollisions[1], 0.5f);
+        Collision(new Vector3(0, 0, 1), sphereCollisions[1], 0.5f);
+        Collision(new Vector3(0, 0, -1), sphereCollisions[1], 0.5f);
+        Collision(rigidbody_.velocity.normalized, sphereCollisions[1], 0.5f);
         
         // head
-        Collision(Vector3.up, sphereCollisions[0]);
-        Collision(Vector3.left, sphereCollisions[0]);
-        Collision(Vector3.right, sphereCollisions[0]);
-        Collision(new Vector3(0, 0, 1), sphereCollisions[0]);
-        Collision(new Vector3(0, 0, -1), sphereCollisions[0]);
-        Collision(rigidbody_.velocity.normalized, sphereCollisions[0]);
+        Collision(Vector3.up, sphereCollisions[0], 0.5f);
+        Collision(Vector3.left, sphereCollisions[0], 0.5f);
+        Collision(Vector3.right, sphereCollisions[0], 0.5f);
+        Collision(new Vector3(0, 0, 1), sphereCollisions[0], 0.5f);
+        Collision(new Vector3(0, 0, -1), sphereCollisions[0], 0.5f);
+        Collision(rigidbody_.velocity.normalized, sphereCollisions[0], 0.5f);
         
         
         /*Collision(new Vector3(0, 1, 1));
@@ -129,9 +129,9 @@ public class RaymarchCollision : MonoBehaviour
         Collision(new Vector3(-1, -1, 0));*/
     }
 
-    private bool Collision (Vector3 dir, GameObject sphere)
+    private bool Collision (Vector3 dir, GameObject sphere, float radius)
     {
-        var ray = Raymarching(dir, sphere);
+        var ray = Raymarching(dir, sphere, radius);
         var v = rigidbody_.velocity;
         var g = Physics.gravity;
 
