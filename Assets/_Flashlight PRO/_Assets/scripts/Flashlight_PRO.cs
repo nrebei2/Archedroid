@@ -27,7 +27,6 @@ public class Flashlight_PRO : MonoBehaviour
 	private bool is_enabled = false;
 
 	public SteamVR_Action_Boolean turnOnAction;
-	public SteamVR_Action_Single powerAction;
 	private Interactable interactable;
 
 	[SerializeField]
@@ -92,7 +91,6 @@ public class Flashlight_PRO : MonoBehaviour
 	    foreach (GameObject sphere in sphereCollisions)
 	    {
 		    Collision(rigidbody_.velocity.normalized, sphere, sphere.GetComponent<SphereCollider>().radius / 10f);
-		    Debug.Log(sphere.GetComponent<SphereCollider>().radius / 10f);
 	    }
     }
 
@@ -142,13 +140,7 @@ public class Flashlight_PRO : MonoBehaviour
 	/// </summary>
 	private void Update()
 	{
-		if (interactable.attachedToHand != null)
-		{
-			float triggervalue = 100 * powerAction.GetAxis(SteamVR_Input_Sources.Any);
-			Change_Intensivity(triggervalue);
-			print(triggervalue);
-		}
-		
+
 		if (interactable.attachedToHand != null && turnOnAction.stateDown)
 		{
 			Switch();
