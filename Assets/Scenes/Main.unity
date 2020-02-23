@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.02
   m_LinearFogStart: 0
   m_LinearFogEnd: 50
-  m_AmbientSkyColor: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
+  m_AmbientSkyColor: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -154,6 +154,29 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0, g: 0, b: 0, a: 0}
+--- !u!1 &187696200 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6097318607055917152, guid: 1cdae8f829e78ab4f9be78310361b643,
+    type: 3}
+  m_PrefabInstance: {fileID: 2141366860}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &187696203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187696200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebe29095993262e46ace41bfed6c8344, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxReduction: 0.1
+  MaxIncrease: 0.1
+  RateDamping: 0.1
+  Strength: 3000
+  StopFlickering: 0
 --- !u!4 &359174362 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6056927050320452806, guid: d927254fed752834f903d1429fb28c71,
@@ -178,16 +201,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Raymarching Object
       objectReference: {fileID: 0}
-    - target: {fileID: 6056927050320452665, guid: d927254fed752834f903d1429fb28c71,
-        type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6056927050320452804, guid: d927254fed752834f903d1429fb28c71,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 541858084}
+      objectReference: {fileID: 1320130466}
     - target: {fileID: 6056927050320452806, guid: d927254fed752834f903d1429fb28c71,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -241,31 +259,6 @@ PrefabInstance:
     - target: {fileID: 6056927050320452806, guid: d927254fed752834f903d1429fb28c71,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6056927050320452807, guid: d927254fed752834f903d1429fb28c71,
-        type: 3}
-      propertyPath: fractal
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 6056927050320452807, guid: d927254fed752834f903d1429fb28c71,
-        type: 3}
-      propertyPath: Parameters.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6056927050320452807, guid: d927254fed752834f903d1429fb28c71,
-        type: 3}
-      propertyPath: Parameters.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6056927050320452807, guid: d927254fed752834f903d1429fb28c71,
-        type: 3}
-      propertyPath: fractaldegreeRotate.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6056927050320452807, guid: d927254fed752834f903d1429fb28c71,
-        type: 3}
-      propertyPath: fractaldegreeRotate.z
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -997,7 +990,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 491450119}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -38.303, y: 0.73, z: -107.63}
+  m_LocalPosition: {x: -50.763, y: 32.579998, z: -97.06999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 491569371}
@@ -1605,39 +1598,6 @@ Behaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 491431585}
   m_Enabled: 1
---- !u!21 &541858084
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarching/Forward_ModWorld_for_VR
-  m_Shader: {fileID: 4800000, guid: 8ab7d6ce3b99a104485ae8ceb8289e65, type: 3}
-  m_ShaderKeywords: _ZWRITE_ON
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _Texture:
-        m_Texture: {fileID: 2800000, guid: b911351f32709594f9855b2e02be5149, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _Cull: 0
-    - _DistanceMultiplier: 1
-    - _Glossiness: 0.2
-    - _Loop: 160
-    - _Metallic: 0
-    - _MinDistance: 0.001
-    - _ZWrite: 1
-    m_Colors:
-    - _Color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &556546399
 GameObject:
   m_ObjectHideFlags: 0
@@ -1839,6 +1799,41 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 401426219}
     m_Modifications:
+    - target: {fileID: 1517806825, guid: 2f7fdf5ead6651644bf9872cc5fd44f4, type: 3}
+      propertyPath: skeletonMainPose
+      value: 
+      objectReference: {fileID: 11400000, guid: 77a79c7bec5aec047bce73ed1fa97bfb,
+        type: 2}
+    - target: {fileID: 1517806825, guid: 2f7fdf5ead6651644bf9872cc5fd44f4, type: 3}
+      propertyPath: poseNames.Array.data[0]
+      value: Flashlight (MAIN)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1517806825, guid: 2f7fdf5ead6651644bf9872cc5fd44f4, type: 3}
+      propertyPath: showLeftPreview
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1517806825, guid: 2f7fdf5ead6651644bf9872cc5fd44f4, type: 3}
+      propertyPath: previewLeftInstance
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1517806825, guid: 2f7fdf5ead6651644bf9872cc5fd44f4, type: 3}
+      propertyPath: showRightPreview
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1517806825, guid: 2f7fdf5ead6651644bf9872cc5fd44f4, type: 3}
+      propertyPath: previewRightInstance
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401098939049987962, guid: 2f7fdf5ead6651644bf9872cc5fd44f4,
+        type: 3}
+      propertyPath: m_Range
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046950220006367610, guid: 2f7fdf5ead6651644bf9872cc5fd44f4,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.1545
+      objectReference: {fileID: 0}
     - target: {fileID: 6976118473565434802, guid: 2f7fdf5ead6651644bf9872cc5fd44f4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1901,6 +1896,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f7fdf5ead6651644bf9872cc5fd44f4, type: 3}
+--- !u!21 &1320130466
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Raymarching/Forward_ModWorld_for_VR
+  m_Shader: {fileID: 4800000, guid: 8ab7d6ce3b99a104485ae8ceb8289e65, type: 3}
+  m_ShaderKeywords: _ZWRITE_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Texture:
+        m_Texture: {fileID: 2800000, guid: b911351f32709594f9855b2e02be5149, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Cull: 0
+    - _DistanceMultiplier: 1
+    - _Glossiness: 0.2
+    - _Loop: 160
+    - _Metallic: 0
+    - _MinDistance: 0.001
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1379941980
 GameObject:
   m_ObjectHideFlags: 0
@@ -3646,17 +3674,17 @@ PrefabInstance:
     - target: {fileID: 1334530589568734520, guid: a189e2a2cb77a8b44be1062502ba8cfb,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -36.96
+      value: -49.42
       objectReference: {fileID: 0}
     - target: {fileID: 1334530589568734520, guid: a189e2a2cb77a8b44be1062502ba8cfb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.53
+      value: 37.38
       objectReference: {fileID: 0}
     - target: {fileID: 1334530589568734520, guid: a189e2a2cb77a8b44be1062502ba8cfb,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -111.51
+      value: -100.95
       objectReference: {fileID: 0}
     - target: {fileID: 1334530589568734520, guid: a189e2a2cb77a8b44be1062502ba8cfb,
         type: 3}
