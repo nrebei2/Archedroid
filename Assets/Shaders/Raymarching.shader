@@ -1,4 +1,4 @@
-Shader "Raymarching/Forward_ModWorld_for_VR"
+Shader "Raymarching/AllFractals"
 {
 
 Properties
@@ -21,6 +21,8 @@ Properties
 // @block Properties
 [Header(Additional Parameters)]
 _Texture("Texture", 2D) = "" {}
+_TexturePattern("TexturePattern", 2D) = "" {}
+_TextureColormap("TextureColormap", 2D) = "" {}
 // @endblock
 }
 
@@ -37,7 +39,7 @@ Tags
 Cull [_Cull]
 
 CGINCLUDE
-
+#pragma multi_compile StaticMandelbulb DynamicMandelbulb Julia Juliabulb Sierpinski Mandelbox KaleidoscopicIFS Tglad Hartverdrahtet PseudoKleinian PseudoKnightyan Mandelbulb2 MengerSponge apo plane FCT_BBSK trinoise RecursiveTetrahedron TruchetTentacles FCT_PROTEIN FCT_ORBIT FCT_MNMT FCT_CRAB FCT_HUB FCT_HYPERAPO FCT_DLBT FCT_MZGN FCT_PIPES FCT_APOP FCT_APO FCT_HTVT FCT_KNKL FCT_KIFS FCT_TEXT FCT_TEST
 //#define WORLD_SPACE
 
 #define OBJECT_SHAPE_NONE
@@ -79,12 +81,14 @@ uniform float3 _fractalScale;
 
 uniform float3 _modInterval;
 
-uniform float3 _modBool;
-
 uniform float _fractalNumber;
 
 uniform float _power;
 uniform float3 Params;
+
+uniform float4 cTexParam;
+
+float4 distance;
 
 
 // @block DistanceFunction
@@ -97,129 +101,13 @@ inline float DistanceFunction(float3 p)
     p = ScaleY(p, _fractalScale.y);
     p = ScaleZ(p, _fractalScale.z);
     
-    if (_modBool.x == 1) {
-        p.x = Repeat(p.x, _modInterval.x);
-    }
-    if (_modBool.y == 1) {
-        p.y = Repeat(p.y, _modInterval.y);
-    }
-    if (_modBool.z == 1) {
-        p.z = Repeat(p.z, _modInterval.z);
-    }
+    p.x = Repeat(p.x, _modInterval.x);
+    p.y = Repeat(p.y, _modInterval.y);
+    p.z = Repeat(p.z, _modInterval.z);
 
-
-    switch (_fractalNumber)
-    {
-        case 0:
-            return sdMandelbulb(p);
-            break;
-        case 1:
-            return sdDinamMandelbulb(p);
-            break;
-        case 2:
-            return sdJulia(p);
-            break;
-        case 3:
-            return sdJuliabulb(p);
-            break;
-        case 4:
-            return sierpinski(p);
-            break;
-        case 5:
-            return mandelbox(p);
-            break;
-        case 6:
-            return kaleidoscopic_IFS(p);
-            break;
-        case 7:
-            return tglad_formula(p);
-            break;
-        case 8:
-            return hartverdrahtet(p);
-            break;
-        case 9:
-            return pseudo_kleinian(p);
-            break;
-        case 10:
-            return pseudo_knightyan(p);
-            break;
-        case 11:
-            return mandelbulb2(p, _power);
-            break;        
-        case 12:
-            return MengerSponge(p);
-            break;      
-        case 13:
-            return apo(p, .0274, float3(1., 1., 1.3), float3(0., 0., 0.));
-            break; 
-        case 14:
-            return sdPlane(p, float4(0,1,0,0));
-            break;    
-        case 15:
-            return FCT_BBSK(p, Params);     
-            break;    
-        case 16:
-            return trinoise(p);     
-            break;  
-        /*case 17:
-            return RecursiveTetrahedron(p, 3);     
-            break;  */
-        case 18:
-            return TruchetTentacles(p);     
-            break;
-        case 19:
-            return FCT_PROTEIN(p, Params);     
-            break;
-        case 20:
-            return FCT_ORBIT(p);     
-            break;
-        case 21:
-            return FCT_MNMT(p);     
-            break;
-        case 22:
-            return FCT_CRAB(p);     
-            break;
-        case 23:
-            return FCT_HUB(p, Params);     
-            break;
-        case 24:
-            return FCT_HYPERAPO(p, Params);     
-            break;
-        case 25:
-            return FCT_DLBT(p, Params);     
-            break;
-        case 26:
-            return FCT_MZGN(p, Params);     
-            break;
-        case 27:
-            return FCT_PIPES(p);     
-            break;
-        case 28:
-            return FCT_APOP(p, Params);     
-            break;
-        case 29:
-            return FCT_APO(p);     
-            break;
-        case 30:
-            return FCT_HTVT(p, Params);     
-            break;
-        case 31:
-            return FCT_KNKL(p, Params);     
-            break;   
-        case 32:
-            return FCT_KIFS(p, Params);     
-            break;
-        case 33:
-            return FCT_TEXT(p);     
-            break;
-        case 34:
-            return FCT_TEST(p);     
-            break;                                                                
-        default:
-            return apo(p, .0274, float3(1., 1., 1.3), float3(0., 0., 0.));
-            break;         
-    }
-    return 1;
+    distance = sdfmap(p, _power, Params);
+    
+    return distance.x;
     
     //return apo(p, .0274, float3(1., 1., 1.3), float3(0., 0., 0.));
 }
@@ -280,6 +168,9 @@ inline float3 _GetDistanceFunctionNormal(float3 p)
 sampler2D _Texture;
 float4 _Texture_ST;
 
+sampler2D _TexturePattern;
+sampler2D _TextureColormap;
+
 float3 normal;
 float glow = 0.0;
 
@@ -300,18 +191,22 @@ inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)
     o.Emission += emission;
     */
     
-    // find where exactly in the code brings up the black areas around the edges (Increasing "Loop" fixed that, though...)
+    // find where exactly in the code brings up the black areas around the edges ---> its the raymarching algoritm itself
     float ao = 1.0 - 1.0 * ray.loop / ray.maxLoop;
     o.Occlusion *= ao;
-    o.Albedo.rgb = tex2D(_Texture, ray.endPos.xy * _Texture_ST.xy + _Texture_ST.zw);
     o.Emission *= ao;
-    
+    //o.Albedo.rgb = tex2D(_Texture, ray.endPos.xy * _Texture_ST.xy + _Texture_ST.zw);
+    float3 txt = tex2D(_TexturePattern, ray.endPos.xz * cTexParam.x).rgb;
+    float4 col = tex2D(_TextureColormap, fractalTexMap(ray.endPos,txt,distance.y,distance.z,distance.w, cTexParam));
+    //col *= 1.05 - 10. * max(0.3-0.2,0.);
+    o.Albedo.rgb = col;
     
     
     // Makes colors go sicko mode
     //o.Albedo = abs(1.0 - Mod(ray.endPos * 0.1 + _Time.y, 2.0));
    
-}
+}   
+
 // @endblock
 
 ENDCG

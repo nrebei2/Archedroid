@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class DebugCamera : MonoBehaviour
+public class CompCamMovement : MonoBehaviour
 {
     [SerializeField] float speedXY         = 1f;
     [SerializeField] float speedXZ         = 5f;

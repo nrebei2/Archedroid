@@ -30,6 +30,7 @@ inline float SmoothMin(float d1, float d2, float k)
 
 inline float Repeat(float pos, float span)
 {
+    if(span==0.0) return pos;
     return Mod(pos, span) - span * 0.5;
 }
 
@@ -40,6 +41,7 @@ inline float2 Repeat(float2 pos, float2 span)
 
 inline float3 Repeat(float3 pos, float3 span)
 {
+
     return Mod(pos, span) - span * 0.5;
 }
 

@@ -50,7 +50,7 @@ public class RaymarchingCamera : MonoBehaviour
 
     
     [Header("Signed Distance Field")]
-    public Fractal fractal;
+    public Fractal2 fractal;
     
     [Header("Texture and Lighting (Ambient light can be configured in lighting settings)")]
     public Texture fractalTexutre;
@@ -72,16 +72,31 @@ public class RaymarchingCamera : MonoBehaviour
     
     public static float _power;
     public float power;
-    
+
+    [Header("Parameters")] 
+    public GameObject ParamChanger;
     public static Vector3 Params;
     public Vector3 Parameters;
     
-
-    [Header("Make Object Repeat Indefinitely on Axis (Value 1 is True, Any Other Value is False)")]
-    public Vector3 _modBool;
     
     [Header("ModInterval")]
     public Vector3 _modInterval;
+
+
+    private string enumAsString;
+    private string lastEnumAsString;
+    
+    
+    public Texture texturePattern;
+    public Texture textureColormap;
+
+    [Header("cTexParam")]
+    public float _patternScale;
+    public float _colormapYscale;
+    public float _patternInfluence;
+    public float _fractalInfluence;
+    private Vector4 cTexParam;
+    
     
     public Material material
     {
@@ -111,15 +126,19 @@ public class RaymarchingCamera : MonoBehaviour
         }
         
         _power = power;
-        Parameters.x = LinearParamX.currentLinearMapping;
-        Parameters.y = LinearParamY.currentLinearMapping;
-        Parameters.z = LinearParamZ.currentLinearMapping;
+
+        if (ParamChanger.activeSelf)
+        {
+            Parameters.x = LinearParamX.currentLinearMapping;
+            Parameters.y = LinearParamY.currentLinearMapping;
+            Parameters.z = LinearParamZ.currentLinearMapping;
+        }
+
         Params = Parameters;
         _fractalScale = fractalScale;
         _fractaldegreeRotate = fractaldegreeRotate;
         _fractalPosition = fractalPosition;
-
-        rend.sharedMaterial.SetVector("_modBool", _modBool);
+        
         rend.sharedMaterial.SetVector("_modInterval", _modInterval);
         
         rend.sharedMaterial.SetVector("_fractalPosition", _fractalPosition);
@@ -128,6 +147,10 @@ public class RaymarchingCamera : MonoBehaviour
         rend.sharedMaterial.SetVector("_fractalScale", _fractalScale);
         rend.sharedMaterial.SetFloat("_power", _power);
         rend.sharedMaterial.SetVector("Params", Params);
+        
+        cTexParam = new Vector4(_patternScale, _colormapYscale, _patternInfluence, _fractalInfluence);
+        rend.sharedMaterial.SetVector("cTexParam", cTexParam);
+
         
         /*
         material.SetFloat("_ShadowIntensity", _ShadowIntensity);
@@ -148,129 +171,35 @@ public class RaymarchingCamera : MonoBehaviour
         rend.sharedMaterial.SetFloat("_MinDistance", MinimumDistance);
         rend.sharedMaterial.SetFloat("_DistanceMultiplier", DistanceMultiplier);
         rend.sharedMaterial.SetTexture("_Texture", fractalTexutre);
+        rend.sharedMaterial.SetTexture("_TexturePattern", texturePattern);
+        rend.sharedMaterial.SetTexture("_TextureColormap", textureColormap);
         rend.sharedMaterial.SetColor("_Color", Color);
         rend.sharedMaterial.SetFloat("_Metallic", Metallic);
         rend.sharedMaterial.SetFloat("_Glossiness", Smoothness);
 
-        
-        switch (fractal)
+        foreach (Fractal2 suit in (Fractal2[]) Enum.GetValues(typeof(Fractal2)))
         {
-            case Fractal.StaticMandelbulb:
-                _fractalNumber = 0;
-                break;
-            case Fractal.DynamicMandelbulb:
-                _fractalNumber = 1;
-                break;
-            case Fractal.Julia:
-                _fractalNumber = 2;
-                break;
-            case Fractal.Juliabulb:
-                _fractalNumber = 3;
-                break;
-            case Fractal.Sierpinski:
-                _fractalNumber = 4;
-                break;
-            case Fractal.Mandelbox:
-                _fractalNumber = 5;
-                break;
-            case Fractal.KaleidoscopicIFS:
-                _fractalNumber = 6;
-                break;
-            case Fractal.Tglad:
-                _fractalNumber = 7;
-                break;
-            case Fractal.Hartverdrahtet:
-                _fractalNumber = 8;
-                break;
-            case Fractal.PseudoKleinian:
-                _fractalNumber = 9;
-                break;
-            case Fractal.PseudoKnightyan:
-                _fractalNumber = 10;
-                break;
-            case Fractal.Mandelbulb2:
-                _fractalNumber = 11;
-                break;
-            case Fractal.MengerSponge:
-                _fractalNumber = 12;
-                break;
-            case Fractal.apo:
-                _fractalNumber = 13;
-                break;
-            case Fractal.plane:
-                _fractalNumber = 14;
-                break;
-            case Fractal.FCT_BBSK:
-                _fractalNumber = 15;
-                break;
-            case Fractal.trinoise:
-                _fractalNumber = 16;
-                break;
-            case Fractal.RecursiveTetrahedron:
-                _fractalNumber = 17;
-                break;
-            case Fractal.TruchetTentacles:
-                _fractalNumber = 18;
-                break;
-            case Fractal.FCT_PROTEIN:
-                _fractalNumber = 19;
-                break;
-            case Fractal.FCT_ORBIT:
-                _fractalNumber = 20;
-                break;
-            case Fractal.FCT_MNMT:
-                _fractalNumber = 21;
-                break;
-            case Fractal.FCT_CRAB:
-                _fractalNumber = 22;
-                break;
-            case Fractal.FCT_HUB:
-                _fractalNumber = 23;
-                break;
-            case Fractal.FCT_HYPERAPO:
-                _fractalNumber = 24;
-                break;
-            case Fractal.FCT_DLBT:
-                _fractalNumber = 25;
-                break;
-            case Fractal.FCT_MZGN:
-                _fractalNumber = 26;
-                break;
-            case Fractal.FCT_PIPES:
-                _fractalNumber = 27;
-                break;
-            case Fractal.FCT_APOP:
-                _fractalNumber = 28;
-                break;
-            case Fractal.FCT_APO:
-                _fractalNumber = 29;
-                break;
-            case Fractal.FCT_HTVT:
-                _fractalNumber = 30;
-                break;
-            case Fractal.FCT_KNKL:
-                _fractalNumber = 31;
-                break;
-            case Fractal.FCT_KIFS:
-                _fractalNumber = 32;
-                break;
-            case Fractal.FCT_TEXT:
-                _fractalNumber = 33;
-                break;
-            case Fractal.FCT_TEST:
-                _fractalNumber = 34;
-                break;
+            if (fractal == suit)
+            {
+                _fractalNumber = (float) suit;
+                enumAsString = Enum.GetName (typeof(Fractal2), (int)_fractalNumber);
+                Debug.Log(enumAsString);
+            }
         }
         
+        if (lastEnumAsString != enumAsString)
+        {
+            material.DisableKeyword(lastEnumAsString);
+            material.EnableKeyword(enumAsString);
+            Debug.Log(lastEnumAsString + "--->" + enumAsString);
+            lastEnumAsString = enumAsString;
+        }
+
         rend.sharedMaterial.SetFloat("_fractalNumber", _fractalNumber);
         //Debug.Log(_fractalNumber);
-        
-
-        
-
     }
 }
-    public enum Fractal{ StaticMandelbulb, DynamicMandelbulb, Julia, Juliabulb, Sierpinski, Mandelbox, 
+    public enum Fractal2{ StaticMandelbulb, DynamicMandelbulb, Julia, Juliabulb, Sierpinski, Mandelbox, 
         KaleidoscopicIFS, Tglad, Hartverdrahtet, PseudoKleinian, PseudoKnightyan, Mandelbulb2, MengerSponge, apo, plane,
         FCT_BBSK, trinoise, RecursiveTetrahedron, TruchetTentacles, FCT_PROTEIN, FCT_ORBIT, FCT_MNMT, FCT_CRAB, FCT_HUB, 
         FCT_HYPERAPO, FCT_DLBT, FCT_MZGN, FCT_PIPES, FCT_APOP, FCT_APO, FCT_HTVT, FCT_KNKL, FCT_KIFS, FCT_TEXT, FCT_TEST }

@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 6056927050320452665}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -1.75, z: 0}
-  m_LocalScale: {x: 400, y: 400, z: 400}
+  m_LocalScale: {x: 3019.4, y: 3019.4, z: 3019.4}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -92,15 +92,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60cb7375a145b45d1a9d95a814c3e442, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _shader: {fileID: 4800000, guid: 8ab7d6ce3b99a104485ae8ceb8289e65, type: 3}
   Loop: 160
   MinimumDistance: 0.001
   DistanceMultiplier: 1
-  fractal: 24
+  fractal: 7
   fractalTexutre: {fileID: 2800000, guid: b911351f32709594f9855b2e02be5149, type: 3}
   Color: {r: 0, g: 0, b: 0, a: 0}
   Metallic: 0
-  Smoothness: 0.2
+  Smoothness: 0
   fractalPosition: {x: 0, y: 0, z: 0}
   _fractalSmooth: 0
   fractaldegreeRotate: {x: 0, y: 0, z: 0}
@@ -108,4 +107,4 @@ MonoBehaviour:
   power: 2
   Parameters: {x: 0, y: 0, z: 0}
   _modBool: {x: 0, y: 0, z: 0}
-  _modInterval: {x: 0, y: 1, z: 1}
+  _modInterval: {x: 0, y: 0, z: 0}
