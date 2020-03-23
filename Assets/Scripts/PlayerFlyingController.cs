@@ -8,12 +8,12 @@ public class PlayerFlyingController : MonoBehaviour
 {
     public SteamVR_Action_Vector2 input;
     public float speed = 1;
-    private CharacterController characterController;
+    public CharacterController characterController;
     
     // Start is called before the first frame update
     void Start()
     {
-        characterController = GetComponent<CharacterController>();
+        //characterController = GetComponent<CharacterController>();
     }
 
     // Update is called once per frame

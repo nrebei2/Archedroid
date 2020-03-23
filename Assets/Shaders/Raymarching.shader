@@ -195,11 +195,14 @@ inline void PostEffect(RaymarchInfo ray, inout PostEffectOutput o)
     float ao = 1.0 - 1.0 * ray.loop / ray.maxLoop;
     o.Occlusion *= ao;
     o.Emission *= ao;
-    //o.Albedo.rgb = tex2D(_Texture, ray.endPos.xy * _Texture_ST.xy + _Texture_ST.zw);
-    float3 txt = tex2D(_TexturePattern, ray.endPos.xz * cTexParam.x).rgb;
-    float4 col = tex2D(_TextureColormap, fractalTexMap(ray.endPos,txt,distance.y,distance.z,distance.w, cTexParam));
+    // Old coloring method
+    o.Albedo.rgb = tex2D(_Texture, ray.endPos.xy * _Texture_ST.xy + _Texture_ST.zw);
+    
+    // New coloring method (currently broken)
+    //float3 txt = tex2D(_TexturePattern, ray.endPos.xz * cTexParam.x).rgb;
+    //float4 col = tex2D(_TextureColormap, fractalTexMap(ray.endPos,txt,distance.y,distance.z,distance.w, cTexParam));
     //col *= 1.05 - 10. * max(0.3-0.2,0.);
-    o.Albedo.rgb = col;
+    //o.Albedo.rgb = col;
     
     
     // Makes colors go sicko mode

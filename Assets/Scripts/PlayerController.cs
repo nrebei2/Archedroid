@@ -19,8 +19,8 @@ public class PlayerController : MonoBehaviour
     public SteamVR_Action_Vector2 input;
     public SteamVR_Action_Boolean jump;
     
-    public float Speed = 1f;
-    public float JumpHeight = 2f;
+    public float Speed = 3f;
+    public float JumpHeight = 1.6f;
     public LayerMask Ground;
     
     public float GroundDistance = 0.2f;
@@ -94,6 +94,10 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        
+        Vector3 direction = Player.instance.hmdTransform.TransformDirection(new Vector3(input.axis.x, 0, input.axis.y));
+        rigidbody_.MovePosition(rigidbody_.position + Vector3.ProjectOnPlane(direction, Vector3.up) * Speed * Time.fixedDeltaTime);
+        
         // feet
         groundedinfractal = Collision(Vector3.down, sphereCollisions[2], 0.5f) ||
                             Collision(Vector3.left, sphereCollisions[2], 0.5f) ||
@@ -169,18 +173,19 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        Vector3 direction = Player.instance.hmdTransform.TransformDirection(new Vector3(input.axis.x, 0, input.axis.y));
-        rigidbody_.MovePosition(rigidbody_.position + Vector3.ProjectOnPlane(direction, Vector3.up) * Speed * Time.fixedDeltaTime);
+       
 
         
         _isGrounded = Physics.CheckSphere(_groundChecker.position, GroundDistance, Ground, QueryTriggerInteraction.Ignore) || groundedinfractal;;
         
-        if (jump.state && _isGrounded)
+        if (jump.stateDown && _isGrounded)
         {
             rigidbody_.AddForce(Vector3.up * Mathf.Sqrt(JumpHeight * -2f * Physics.gravity.y), ForceMode.VelocityChange);
         }
     }
 
+    
+    
     // Raycasts showing distance from the object and the normal where the forward ray hits.
     // and it works lol
     /*private void Update()

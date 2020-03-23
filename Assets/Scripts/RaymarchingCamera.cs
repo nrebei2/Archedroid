@@ -183,7 +183,6 @@ public class RaymarchingCamera : MonoBehaviour
             {
                 _fractalNumber = (float) suit;
                 enumAsString = Enum.GetName (typeof(Fractal2), (int)_fractalNumber);
-                Debug.Log(enumAsString);
             }
         }
         
@@ -191,7 +190,6 @@ public class RaymarchingCamera : MonoBehaviour
         {
             material.DisableKeyword(lastEnumAsString);
             material.EnableKeyword(enumAsString);
-            Debug.Log(lastEnumAsString + "--->" + enumAsString);
             lastEnumAsString = enumAsString;
         }
 
